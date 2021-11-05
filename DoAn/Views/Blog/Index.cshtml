@@ -1,0 +1,42 @@
+﻿@using DoAn.Models
+@using PagedList.Mvc
+@model PagedList.PagedList<baiViet>
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Menu.cshtml";
+}
+
+<div class="col-sm-9">
+    <div class="blog-post-area">
+        <h2 class="title text-center">Latest From our Blog</h2>
+        @foreach (baiViet bv in Model)
+            {
+                <div class="single-blog-post">
+                    <h2>@bv.tenBV</h2>
+                    <div class="post-meta">
+                        <ul>
+                            <li><i class="fa fa-user"></i> Mac Doe</li>
+                            <li><i class="fa fa-clock-o"></i> @bv.ngayDang.ToString("hh:mm:ss")</li>
+                            <li><i class="fa fa-calendar"></i> @bv.ngayDang.ToString("yyyy:MM:dd")</li>
+                        </ul>
+                        <span>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star-half-o"></i>
+                        </span>
+                    </div>
+                    <a href="">
+                        <img src="@bv.anh.Url" alt="" height="200px">
+                    </a>
+                    <p>@Html.Raw(bv.tomTat)</p>
+                    <a class="btn btn-primary" href="@Url.Action("Single","Blog", routeValues: new { id = bv.tenDuongDan })">Đọc thêm</a>
+                </div>
+            }
+        
+        <div class="pagination-area">
+            @Html.PagedListPager(Model,page=>Url.Action("Index","Blog",routeValues: new {page = page }))
+        </div>
+    </div>
+</div>

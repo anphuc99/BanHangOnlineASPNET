@@ -1,0 +1,241 @@
+﻿@using DoAn.Models
+@{
+    ViewBag.Title = "Media_Images";
+}
+@section css{
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="/resources/demos/style.css">
+    <style>
+        #gallery {
+            float: left;
+            width: 65%;
+            min-height: 12em;
+        }
+
+        .gallery.custom-state-active {
+            background: #eee;
+        }
+
+        .gallery li {
+            float: left;
+            width: 96px;
+            padding: 0.4em;
+            margin: 0 0.4em 0.4em 0;
+            text-align: center;
+        }
+
+            .gallery li h5 {
+                margin: 0 0 0.4em;
+                cursor: move;
+            }
+
+            .gallery li span {
+                float: right;
+            }
+
+                .gallery li span.ui-icon-zoomin {
+                    float: left;
+                }
+
+            .gallery li img {
+                width: 100%;
+                cursor: move;
+            }
+
+        #trash {
+            float: right;
+            width: 32%;
+            min-height: 18em;
+            padding: 1%;
+        }
+
+            #trash h4 {
+                line-height: 16px;
+                margin: 0 0 0.4em;
+            }
+
+                #trash h4 .ui-icon {
+                    float: left;
+                }
+
+            #trash .gallery h5 {
+                display: none;
+            }
+    </style>
+}
+<div class="content-wrapper">
+    <div class="container">
+        <div class="ui-widget ui-helper-clearfix">
+            <ul id="gallery" class="gallery ui-helper-reset ui-helper-clearfix">
+                @foreach (anh anh in ViewBag.anhs)
+                {
+                    <li class="ui-widget-content ui-corner-tr">
+                        @{ string tenAnh = anh.Url.Split('/')[anh.Url.Split('/').Length - 1];}
+                        <p class="ui-widget-header overflow-hidden">@tenAnh</p>
+                        <img src="@anh.Url" alt="@tenAnh" width="96" height="72" id_anh ="@anh.ID">
+                        <span href="@anh.Url" link="@anh.Url" style="cursor: pointer" title="View larger image" class="ui-icon ui-icon-zoomin">View larger</span>
+                        <span href="link/to/trash/script/when/we/have/js/off" style="cursor: pointer" title="Delete this image" class="ui-icon ui-icon-trash">Delete image</span>
+                    </li>
+                }
+            </ul>
+            <div id="trash" class="ui-widget-content ui-state-default">
+                <h4 class="ui-widget-header"><span class="ui-icon ui-icon-trash">Trash</span> Trash</h4>
+            </div>   
+            <button style="float:right" class="btn btn-danger btn-sm" onclick="xoaImg()">Xóa</button>
+            @using (Html.BeginForm("Delete_Image", "Admin", FormMethod.Post))
+            {
+                @Html.Hidden("anhs")
+                @Html.Hidden("folder",new { Value = ViewBag.folder })
+            }
+        </div>
+    </div>
+
+</div>
+<div style="display:none" id="dialog-confirm" title="Empty the recycle bin?">
+    <p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>These items will be permanently deleted and cannot be recovered. Are you sure?</p>
+</div>
+@section js{
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script>
+        function open_dialog(id) {
+            $("#dialog-confirm").dialog({
+                resizable: false,
+                height: "auto",
+                width: 400,
+                modal: true,
+                buttons: {
+                    "Delete all items": function () {
+                        $(this).dialog("close");
+                    },
+                    Cancel: function () {
+                        $(this).dialog("close");
+                    }
+                }
+            });
+        }
+        $(function () {
+
+            // There's the gallery and the trash
+            var $gallery = $("#gallery"),
+                $trash = $("#trash");
+
+            // Let the gallery items be draggable
+            $("li", $gallery).draggable({
+                cancel: "span.ui-icon", // clicking an icon won't initiate dragging
+                revert: "invalid", // when not dropped, the item will revert back to its initial position
+                containment: "document",
+                helper: "clone",
+                cursor: "move"
+            });
+
+            // Let the trash be droppable, accepting the gallery items
+            $trash.droppable({
+                accept: "#gallery > li",
+                classes: {
+                    "ui-droppable-active": "ui-state-highlight"
+                },
+                drop: function (event, ui) {
+                    deleteImage(ui.draggable);
+                }
+            });
+
+            // Let the gallery be droppable as well, accepting items from the trash
+            $gallery.droppable({
+                accept: "#trash li",
+                classes: {
+                    "ui-droppable-active": "custom-state-active"
+                },
+                drop: function (event, ui) {
+                    recycleImage(ui.draggable);
+                }
+            });
+
+            // Image deletion function
+            var recycle_icon = "<span href='link/to/recycle/script/when/we/have/js/off' title='Recycle this image' class='ui-icon ui-icon-refresh'>Recycle image</span>";
+            function deleteImage($item) {
+                $item.fadeOut(function () {
+                    var $list = $("ul", $trash).length ?
+                        $("ul", $trash) :
+                        $("<ul class='gallery ui-helper-reset'/>").appendTo($trash);
+
+                    $item.find("span.ui-icon-trash").remove();
+                    $item.append(recycle_icon).appendTo($list).fadeIn(function () {
+                        $item
+                            .animate({ width: "48px" })
+                            .find("img")
+                            .animate({ height: "36px" });
+                    });
+                });
+            }
+
+            // Image recycle function
+            var trash_icon = "<span href='link/to/trash/script/when/we/have/js/off' title='Delete this image' class='ui-icon ui-icon-trash'>Delete image</span>";
+            function recycleImage($item) {
+                $item.fadeOut(function () {
+                    $item
+                        .find("span.ui-icon-refresh")
+                        .remove()
+                        .end()
+                        .css("width", "96px")
+                        .append(trash_icon)
+                        .find("img")
+                        .css("height", "72px")
+                        .end()
+                        .appendTo($gallery)
+                        .fadeIn();
+                });
+            }
+
+            // Image preview function, demonstrating the ui.dialog used as a modal window
+            function viewLargerImage($link) {
+                var src = $link.attr("href");
+                var title = $link.siblings("img").attr("alt");
+                var img = $("<div style='display: none;'><img src = '"+src+"' alt='" + title + "' width='70%' style='padding: 8px;' /></div>")
+                    .appendTo("body");
+                setTimeout(function () {
+                    img.dialog({
+                        title: title,
+                        width: "400px",
+                        modal: true
+                    });
+                }, 1);
+            }
+
+            // Resolve the icons behavior with event delegation
+            $("ul.gallery > li").on("click", function (event) {
+                var $item = $(this),
+                    $target = $(event.target);
+
+                if ($target.is("span.ui-icon-trash")) {
+                    deleteImage($item);
+                } else if ($target.is("span.ui-icon-zoomin")) {
+                    viewLargerImage($target);
+                } else if ($target.is("span.ui-icon-refresh")) {
+                    recycleImage($item);
+                }
+
+                return false;
+            });            
+        });
+    </script>
+    <script>
+        function xoaImg() {
+            debugger
+            var anhs = ""
+            $("#trash img").each(function () {
+                anhs += $(this).attr("id_anh")+","
+            })
+            if (anhs !== "") {
+                $("#anhs").val(anhs.substring(0, anhs.length - 1))
+                $("form").submit()
+            } else
+                alert("Không có ảnh để xóa")
+
+        }
+        $(document).ready(function () {
+            var msg = '@Html.Raw(ViewBag.msg)'
+            if (msg !== '')
+                alert(msg)
+        })
+    </script>
+}

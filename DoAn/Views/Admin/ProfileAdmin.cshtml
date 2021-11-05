@@ -1,0 +1,191 @@
+﻿@model DoAn.Models.taiKhoan
+@using DoAn.Models
+@{
+    string gioiTinh = Model.gioiTinh ? "Nam" : "Nữ";
+    string chan = Model.duocSD ? "Khóa tài khoản" : "Mở khóa tài khoản";
+    string tinhTrang = Model.duocSD ? "Đang hoạt động" : "Bị khóa";
+    ViewBag.Title = "ProfileAdmin";
+}
+
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Profile</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item active">User Profile</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-3">
+
+                    <!-- Profile Image -->
+                    <div class="card card-primary card-outline">
+                        <div class="card-body box-profile">
+                            <div class="text-center">
+                                <img class="profile-user-img img-fluid img-circle"
+                                     src="../../dist/img/user4-128x128.jpg"
+                                     alt="User profile picture">
+                            </div>
+
+                            <h3 class="profile-username text-center">@Model.HoTen</h3>
+
+                            <ul class="list-group list-group-unbordered mb-3">
+                                <li class="list-group-item">
+                                    <b>Giới tính</b> <a class="float-right">@gioiTinh</a>
+                                </li>
+                                <li class="list-group-item">
+                                    <b>Số điện thoại</b> <a class="float-right">@Model.SDT</a>
+                                </li>
+                            </ul>
+
+                            <a href="@Url.Action("SettingUser","Admin",routeValues: new {id = Model.ID, type = 1 })" class="btn btn-primary btn-block"><b>@chan</b></a>
+                        </div>
+                        <!-- /.card-body -->
+                    </div>
+                    <!-- /.card -->
+                </div>
+                <!-- /.col -->
+                <div class="col-md-9">
+                    <div class="card">
+                        <div class="card-header p-2">
+                            <ul class="nav nav-pills">
+                                <li class="nav-item"><a class="nav-link active" href="#activity" data-toggle="tab">Thông tin thêm</a></li>
+                                <li class="nav-item"><a class="nav-link" href="#timeline" data-toggle="tab">Lịch sử đặt hàng</a></li>
+                                <li class="nav-item"><a class="nav-link" href="#settings" data-toggle="tab">Cài đặt tài khoản</a></li>
+                            </ul>
+                        </div><!-- /.card-header -->
+                        <div class="card-body">
+                            <div class="tab-content">
+                                <div class="active tab-pane" id="activity">
+                                    <ul class="list-group list-group-unbordered mb-3">
+                                        <li class="list-group-item">
+                                            <b>ID: </b> <span class="float-right">@Model.ID</span>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <b>Tên tài khoản: </b> <span class="float-right">@Model.tenTK</span>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <b>Email</b> <span class="float-right">@Model.email</span>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <b>Ngày tạo</b> <span class="float-right">@Model.ngayCap.ToString("dd/MM/yyyy")</span>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <b>Tình trạng</b> <span class="float-right">@tinhTrang</span>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <b>Vai trò</b> <span class="float-right">@Model.vaiTro</span>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <b>Ghi Chú</b> <span class="float-right">@Model.ghiChu</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <!-- /.tab-pane -->
+                                <div class="tab-pane" id="timeline">
+                                    <!-- The timeline -->
+                                    <div class="timeline timeline-inverse">
+
+                                        <!-- timeline time label -->
+                                        @foreach (donHang donHang in Model.donHangs)
+                                        {
+                                            <div class="time-label">
+                                                @if (donHang.thanhCong != null)
+                                                {
+                                                    if ((donHang.thanhCong ?? false))
+                                                    {
+                                                        <span class="bg-success">
+                                                            @donHang.ngayDatHang.ToString("dd/MM/yyyy hh:mm tt")
+                                                        </span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="bg-danger">
+                                                            @donHang.ngayDatHang.ToString("dd/MM/yyyy hh:mm tt")
+                                                        </span>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <span class="bg-warning">
+                                                        @donHang.ngayDatHang.ToString("dd/MM/yyyy hh:mm tt")
+                                                    </span>
+                                                }
+
+                                            </div>
+                                            <div>
+                                                <div class="timeline-item">
+                                                    <p><a href="@Url.Action("DetailOrder","Admin",routeValues: new { id = donHang.ID })"><b>ID: đơn hàng</b> @donHang.ID</a></p>
+                                                    <p>Ghi Chú: @Html.Raw(donHang.ghiChuShop)</p>
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                                <!-- /.tab-pane -->
+
+                                <div class="tab-pane" id="settings">
+                                    @using (Html.BeginForm("ProfileAdmin", "Admin", FormMethod.Post, new { @class = "form-horizontal" }))
+                                    {
+                                    <div class="form-group row">
+                                        <label for="inputName" class="col-sm-2 col-form-label">Họ và tên</label>
+                                        <div class="col-sm-10">
+                                            @Html.HiddenFor(m=>m.ID,Model.ID)
+                                            @Html.TextBoxFor(m => m.HoTen, new { @class = "form-control", placeholder = "Họ và tên", required = "" })
+                                        </div>
+                                        <label for="inputName" class="col-sm-2 col-form-label">Số điện thoại</label>
+                                        <div class="col-sm-10">
+                                            @Html.TextBoxFor(m => m.SDT, new { @class = "form-control", placeholder = "Số điện thoại", required = "" })
+                                            @Html.ValidationMessageFor(m => m.SDT,"", new { @class = "text-danger" })
+                                        </div>
+                                        <label for="inputName" class="col-sm-2 col-form-label">Email</label>
+                                        <div class="col-sm-10">
+                                            @Html.TextBoxFor(m => m.email, new { @class = "form-control", placeholder = "Email", required="" })
+                                            @Html.ValidationMessageFor(m=>m.email,"",new { @class = "text-danger" })
+                                        </div>
+                                        <label for="inputName" class="col-sm-2 col-form-label">Ghi chú</label>
+                                        <div class="col-sm-10">
+                                            @Html.TextAreaFor(m => m.ghiChu, new { @class = "form-control", placeholder = "Ghi Chú" })
+                                        </div>
+                                        <label for="inputName" class="col-sm-2 col-form-label">Mật khẩu</label>
+                                        <div class="col-sm-10">
+                                            @Html.PasswordFor(m => m.matKhau, new { @class = "form-control", placeholder = "Mât khẩu", required = "" })
+                                        </div>
+                                        <label for="inputName" class="col-sm-2 col-form-label">Xác nhận mật khẩu</label>
+                                        <div class="col-sm-10">
+                                            @Html.Password("xnMK","", new { @class = "form-control", placeholder = "Xác nhận mật khẩu", required = "" })
+                                            <p class="text-danger">@ViewBag.xnMK</p>
+                                        </div>
+                                        <button type="submit" class="btn-danger">Chỉnh sửa</button>
+                                    </div>
+                                    }
+                                </div>
+                                <!-- /.tab-pane -->
+                            </div>
+                            <!-- /.tab-content -->
+                        </div><!-- /.card-body -->
+                    </div>
+                    <!-- /.card -->
+                </div>
+                <!-- /.col -->
+            </div>
+            <!-- /.row -->
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+</div>
+<!-- /.content-wrapper -->

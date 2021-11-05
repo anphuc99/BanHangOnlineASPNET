@@ -1,0 +1,57 @@
+﻿@model DoAn.Models.taiKhoan
+@{
+    ViewBag.Title = "Login";
+
+
+}
+
+
+<section id="form">
+    <!--form-->
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-4 col-sm-offset-1">
+                <div class="login-form">
+                    <!--login form-->
+                    <h2>Login to your account</h2>
+                    @using (Html.BeginForm("Login", "User",FormMethod.Post))
+                    {
+                        @Html.TextBox("TaiKhoan","", new { placeholder = "Tên tài khoản", required = "" })
+                        @Html.Password("MatKhau","", new { placeholder = "Mật khẩu", required = "" })
+                        <p class="text-danger">@ViewBag.msg</p>
+                        <button type="submit" class="btn btn-default">Đăng nhập</button>
+                    }
+                </div><!--/login form-->
+            </div>
+            <div class="col-sm-1">
+                <h2 class="or">OR</h2>
+            </div>
+            <div class="col-sm-4">
+                <div class="signup-form">
+                    <!--sign up form-->
+                    <h2>New User Signup!</h2>
+                    @using (Html.BeginForm("Register", "User", FormMethod.Post))
+                    {
+                        @Html.TextBoxFor(m=>m.HoTen, new { placeholder = "Họ và tên", required = "" })
+                        @Html.TextBoxFor(m => m.tenTK, new { placeholder = "Tên tài khoản", required = "" })
+                        @Html.ValidationMessageFor(m => m.tenTK, "", new { @class = "text-danger" })
+                        @Html.PasswordFor(m => m.matKhau, new { placeholder = "Mật khẩu", required = "" })
+                        @Html.Password("xnMatKhau", "", new { placeholder = "Xác Nhận Mật khẩu", required = "" })
+                        <span class="text-danger">@ViewData["LoiMK"] </span>
+                        <div class="form-group">
+                            @Html.RadioButtonFor(m => m.gioiTinh, true, new { @class = "form-inline ml-sm-2", @checked = "" })
+                            @Html.LabelFor(m => m.gioiTinh, "Nam", new { @class = "form-inline ml-sm-2" })
+                            @Html.RadioButtonFor(m => m.gioiTinh, false, new { @class = "form-inline ml-sm-2" })
+                            @Html.LabelFor(m => m.gioiTinh, "Nữ", new { @class = "form-inline ml-sm-2" })
+                        </div>
+                        @Html.TextBoxFor(m => m.SDT, new { placeholder = "Số điện thoại", required = "", Type = "number" })
+                        @Html.ValidationMessageFor(m => m.SDT, "", new { @class = "text-danger" })
+                        @Html.TextBoxFor(m => m.email, new { placeholder = "Email", required = "", Type = "email" })
+                        @Html.ValidationMessageFor(m => m.email, "", new { @class = "text-danger" })
+                        <button type="submit" class="btn btn-default">Đăng ký</button>
+                    }
+                </div><!--/sign up form-->
+            </div>
+        </div>
+    </div>
+</section><!--/form-->

@@ -1,0 +1,237 @@
+﻿@using DoAn.Models
+@model List<donHang>
+@{
+    ViewBag.Title = "OrderManagement";
+}
+
+<div class="content-wrapper">
+    <div class="row">
+        <div class="col-12">
+            <section class="content-header">
+                <div class="container-fluid">
+                    <div class="row mb-2">
+                        <div class="col-sm-6">
+                            <h1>Quản lý đơn hàng</h1>
+                        </div>
+                        <div class="col-sm-6">
+                            <ol class="breadcrumb float-sm-right">
+                                <li class="breadcrumb-item"><a href="#">Home</a></li>
+                                <li class="breadcrumb-item active">Quản lý đơn hàng</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div><!-- /.container-fluid -->
+            </section>
+            <section class="content">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Danh sách đơn hàng</h3>
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body">
+                        <table id="example1" class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Mã đơn hàng</th>
+                                    <th>Khách hàng</th>
+                                    <th>Số lượng sản phẩm</th>
+                                    <th>Tổng gia</th>
+                                    <th>Tình trạng</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (donHang donHang in Model)
+                                {
+                                    int tongGia = 0;
+                                    int soLuongSP = 0;
+                                    string tinhTrang = "";
+                                    if (donHang.maVanChuyen == null && donHang.thanhCong == null)
+                                    {
+                                        tinhTrang = "<td class='text-info'>Đơn mới</td>";
+                                    }
+                                    else if (donHang.thanhCong == null)
+                                    {
+                                        tinhTrang = "<td class='text-warning'>Đang giao</td>";
+                                    }
+                                    else if (donHang.thanhCong ?? false)
+                                    {
+                                        tinhTrang = "<td class='text-success'>Thành công</td>";
+                                    }
+                                    else if (!(donHang.thanhCong ?? false))
+                                    {
+                                        tinhTrang = "<td class='text-danger'>Thất bại</td>";
+                                    }
+                                    foreach (chiTietDH chiTietDH in donHang.chiTietDHs)
+                                    {
+                                        tongGia += chiTietDH.giaBan;
+                                        soLuongSP += chiTietDH.soLuong;
+                                    }
+                                    <tr>
+                                        <td>@donHang.ID</td>
+                                        <td><a href="@Url.Action("UserProfile","Admin", routeValues: new { id = donHang.taiKhoan.ID })">@donHang.taiKhoan.HoTen</a></td>
+                                        <td>@soLuongSP</td>
+                                        <td>@tongGia</td>
+                                        @Html.Raw(tinhTrang)
+                                        <td>
+                                            <div class="dropdown">
+                                                <span class="dropdown-toggle" style="cursor:pointer" data-toggle="dropdown">
+                                                    <i class="fas fa-edit"></i>
+                                                </span>
+                                                <div class="dropdown-menu">
+                                                    <a href="@Url.Action("DetailOrder","Admin",routeValues: new {id = donHang.ID })" class="dropdown-item">Chi tiết</a>
+                                                    @if (donHang.maVanChuyen == null && donHang.thanhCong == null)
+                                                    {
+                                                        <button class="dropdown-item" data-toggle="modal" data-target="#vanChuyen" onclick="truyenID(@donHang.ID)">Vận Chuyển</button>
+                                                        <button class="dropdown-item" data-toggle="modal" data-target="#huyDon" onclick="truyenID(@donHang.ID)">Hủy đơn</button>
+                                                    }
+                                                    else if (donHang.thanhCong == null)
+                                                    {
+                                                        <a href="@Url.Action("SettingOrder","Admin",routeValues: new {id = donHang.ID, type = 3 })" class="dropdown-item">Hoàn thành</a>
+                                                        <button class="dropdown-item" data-toggle="modal" data-target="#huyDon" onclick="truyenID(@donHang.ID)">Hủy đơn</button>
+                                                    }
+                                                    <button class="dropdown-item" data-toggle="modal" data-target="#GhiChu" onclick="truyenID(@donHang.ID)">Ghi chú</button>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+            </section>
+        </div>
+    </div>
+</div>
+@using (Html.BeginForm("SettingOrder", "Admin", FormMethod.Get))
+{
+    <div class="modal fade" id="vanChuyen" style="display: none; padding-right: 17px;" aria-modal="true" role="dialog">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Thêm ảnh và video</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-control">Nhập đơn vị vận chuyển</label>
+                        @Html.TextBox("dvVanChuyen", "", new { required = "", @class = "form-control" })
+                        <label class="form-control">Nhập mã vận chuyển</label>
+                        @Html.TextBox("maVanChuyen", "", new { required = "", @class = "form-control" })
+                        <label class="form-control">Nhập phí vận chuyển</label>
+                        @Html.TextBox("phiShip", "", new { required = "", @class = "form-control", @Type = "number" })
+                        @Html.Hidden("type", "2")
+                        @Html.Hidden("id", "")
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Thoát</button>
+                    <button type="submit" class="btn btn-primary" id="xacNhan">Chọn</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+}
+@using (Html.BeginForm("SettingOrder", "Admin", FormMethod.Get))
+{
+    <div class="modal fade" id="huyDon" style="display: none; padding-right: 17px;" aria-modal="true" role="dialog">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Thêm ảnh và video</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-control">Nhập lý do hủy</label>
+                        @Html.TextBox("ghiChu", "", new { required = "", @class = "form-control" })
+                        @Html.Hidden("type", "1")
+                        @Html.Hidden("id", "")
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Thoát</button>
+                    <button type="submit" class="btn btn-primary" id="xacNhan">Chọn</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+}
+@using (Html.BeginForm("SettingOrder", "Admin", FormMethod.Get))
+{
+    <div class="modal fade" id="GhiChu" style="display: none; padding-right: 17px;" aria-modal="true" role="dialog">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Thêm ảnh và video</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-control">Nhập ghi chú</label>
+                        @Html.TextBox("ghiChu", "", new { required = "", @class = "form-control" })
+                        @Html.Hidden("type", "4")
+                        @Html.Hidden("id", "")
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Thoát</button>
+                    <button type="submit" class="btn btn-primary" id="xacNhan">Chọn</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+}
+@section js{
+    <script src="~/Asset/Ad/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/Asset/Ad/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/Asset/Ad/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/Asset/Ad/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/Asset/Ad/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+    <script src="~/Asset/Ad/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="~/Asset/Ad/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+    <script src="~/Asset/Ad/plugins/jszip/jszip.min.js"></script>
+    <script src="~/Asset/Ad/plugins/pdfmake/pdfmake.min.js"></script>
+    <script src="~/Asset/Ad/plugins/pdfmake/vfs_fonts.js"></script>
+    <script src="~/Asset/Ad/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+    <script src="~/Asset/Ad/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+    <script src="~/Asset/Ad/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+    <script>
+        $(function () {
+            $("#example1").DataTable({
+                "responsive": true, "lengthChange": false, "autoWidth": false,
+                "buttons": ["copy", "csv", "excel", "pdf", "print"]
+            }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+            $('#example2').DataTable({
+                "paging": true,
+                "lengthChange": false,
+                "searching": false,
+                "ordering": true,
+                "info": true,
+                "autoWidth": false,
+                "responsive": true,
+            });
+        });
+    </script>
+    <script>
+        function truyenID(_id) {
+            $("input#id").val(_id)
+        }
+    </script>
+}

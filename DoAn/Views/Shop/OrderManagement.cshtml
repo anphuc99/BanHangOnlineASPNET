@@ -1,0 +1,195 @@
+﻿@using DoAn.Models
+@model donHang
+@{
+    string tinhTrang = "";
+    if (Model.maVanChuyen == null && Model.thanhCong == null)
+    {
+        tinhTrang = "<div class='col-md-3 text-info'>Đơn mới</div>";
+    }
+    else if (Model.thanhCong == null)
+    {
+        tinhTrang = "<div class='col-md-3 text-warning'>Đang giao</div>";
+    }
+    else if (Model.thanhCong ?? false)
+    {
+        tinhTrang = "<div class='col-md-3 text-success'>Thành công</div>";
+    }
+    else if (!(Model.thanhCong ?? false))
+    {
+        tinhTrang = "<div class='col-md-3 text-danger'>Thất bại</div>";
+    }
+    ViewBag.Title = "OrderManagement";
+}
+
+<div class="row">
+    <div class="row">
+        <div class="col-md-3">
+            <strong>Mã đơn hàng</strong>
+        </div>
+        <div class="col-md-3">
+            @Model.ID
+        </div>
+        <div class="col-md-3">
+            <strong>Địa chỉ:</strong>
+        </div>
+        <div class="col-md-3">
+            @Model.dcGiaoHang
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3">
+            <strong>Tỉnh thành:</strong>
+        </div>
+        <div class="col-md-3">
+            @Model.TinhThanh.Name
+        </div>
+        <div class="col-md-3">
+            <strong>Quận huyện:</strong>
+        </div>
+        <div class="col-md-3">
+            @Model.QuanHuyen.Name
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3">
+            <strong>Phường xã:</strong>
+        </div>
+        <div class="col-md-3">
+            @Model.PhuongXa.Name
+        </div>
+        <div class="col-md-3">
+            <strong>Ngày đặt hàng:</strong>
+        </div>
+        <div class="col-md-3">
+            @Model.ngayDatHang.ToString("dd/MM/yyyy")
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3">
+            <strong>Ngày giao hàng:</strong>
+        </div>
+        <div class="col-md-3">
+            @(Model.ngayGiaoHang!=null?Model.ngayGiaoHang.Value.ToString("dd/MM/yyyy"):null)
+        </div>
+        <div class="col-md-3">
+            <strong>Đơn vị vận chuyển:</strong>
+        </div>
+        <div class="col-md-3">
+            @Model.dvVanChuyen
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3">
+            <strong>Mã vận chuyển:</strong>
+        </div>
+        <div class="col-md-3">
+            @Model.maVanChuyen
+        </div>
+        <div class="col-md-3">
+            <strong>Phí ship:</strong>
+        </div>
+        <div class="col-md-3">
+            @Model.phiShip
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3">
+            <strong>Tình trạng:</strong>
+        </div>
+        @Html.Raw(tinhTrang)
+        <div class="col-md-3">
+            <strong>Ghi chú khách:</strong>
+        </div>
+        <div class="col-md-3">
+            @Model.ghiChuKhach
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3">
+            <strong>Ghi chú shop:</strong>
+        </div>
+        <div class="col-md-3">
+            @Model.ghiChuShop
+        </div>
+    </div>
+   
+</div>
+<div class="row">
+    <h2>Chi tiết đơn hàng</h2>
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Tên sản phẩm</th>
+                <th>Số lượng sản phẩm: </th>
+                <th>Tổng giá thành: </th>
+                <th>Đánh giá: </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (chiTietDH chiTietDH in Model.chiTietDHs)
+            {
+                <tr>
+                    <td>@chiTietDH.sanPham.tenSP</td>
+                    <td>@chiTietDH.soLuong</td>
+                    <td>@chiTietDH.giaBan</td>
+                    @if (chiTietDH.danhGia != null) { 
+                        <td style="color:yellow">
+                            @for(int i = 1; i <= 5; i++) {
+                                if (i <= chiTietDH.danhGia)
+                                {
+                                    <i class="fas fa-star"></i>
+                                }
+                                else { 
+                                    <i class="far fa-star"></i>
+                                }
+                            }
+                        </td>
+                    }else if (Model.thanhCong??false){
+                        <td class="sao" style="color:yellow; cursor: pointer">
+                            <i class="far fa-star" star="1" onclick="danhGia(@chiTietDH.maSP,@chiTietDH.maDH,1)"></i>
+                            <i class="far fa-star" star="2" onclick="danhGia(@chiTietDH.maSP,@chiTietDH.maDH,2)"></i>
+                            <i class="far fa-star" star="3" onclick="danhGia(@chiTietDH.maSP,@chiTietDH.maDH,3)"></i>
+                            <i class="far fa-star" star="4" onclick="danhGia(@chiTietDH.maSP,@chiTietDH.maDH,4)"></i>
+                            <i class="far fa-star" star="5" onclick="danhGia(@chiTietDH.maSP,@chiTietDH.maDH,5)"></i>
+                        </td>                    
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+@section js{
+    <script>
+        $("[star]").mouseenter(function () {
+            let dau = $(this).parent().children().first()
+            while (dau.attr("star") != $(this).attr("star")) {
+                dau.removeClass("far")
+                dau.addClass("fas")
+                dau = dau.next()
+            }
+            dau.removeClass("far")
+            dau.addClass("fas")
+        });
+        $("[star]").mouseleave(function () {
+            let con = $(this).parent().children()
+                con.removeClass("fas")
+                con.addClass("far")
+        })
+        function danhGia(maSP, maDH, sao) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("OrderManagement", "Shop")',
+                data: JSON.stringify({ maSP: maSP, maDH: maDH, sao: sao }),
+                dataType: "json",
+                contentType: 'application/json; charset=utf-8',
+                success: function (data) {
+                    alert(data.msg)
+                    location.reload();
+                },
+                error: function () {
+                    alert("Error occured!!")
+                }
+            })
+        }
+    </script>    
+}

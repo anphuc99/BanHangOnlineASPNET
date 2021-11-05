@@ -1,0 +1,135 @@
+﻿@using DoAn.Models
+@using System.Globalization
+@model List<chiTietDH>
+@{
+    donHang donHang = ViewBag.donHang;
+    string ngayGiao = donHang.ngayGiaoHang!=null? donHang.ngayGiaoHang.Value.ToString("dd/MM/yyyy"):null;
+    string tinhTrang = "";
+    if (donHang.maVanChuyen == null && donHang.thanhCong == null)
+    {
+        tinhTrang = "<td class='text-info'>Đơn mới</td>";
+    }
+    else if (donHang.thanhCong == null)
+    {
+        tinhTrang = "<td class='text-warning'>Đang giao</td>";
+    }
+    else if (donHang.thanhCong ?? false)
+    {
+        tinhTrang = "<td class='text-success'>Thành công</td>";
+    }
+    else if (!(donHang.thanhCong ?? false))
+    {
+        tinhTrang = "<td class='text-danger'>Thất bại</td>";
+    }
+    ViewBag.Title = "DetailOrder";
+}
+
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0">Danh sách sản phẩm</h1>
+                </div><!-- /.col -->
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item active">Danh sách sản phẩm</li>
+                    </ol>
+                </div><!-- /.col -->
+            </div><!-- /.row -->
+        </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+    <!-- /.row -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Chi tiết đơn hàng</h3>
+                    <div class="card-tools">
+
+                    </div>
+                </div>
+                <div class="card-header">
+                    <div class="card-header">
+                        <table>
+                            <tr>
+                                <td class="text-bold">ID: </td>
+                                <td>@donHang.ID</td>
+                                <td class="text-bold">Khách hàng: </td>
+                                <td>@donHang.taiKhoan.HoTen</td>
+                            </tr>
+                            <tr>
+                                <td class="text-bold">Địa chỉ: </td>
+                                <td>@donHang.dcGiaoHang</td>
+                                <td class="text-bold">Tỉnh thành: </td>
+                                <td>@donHang.TinhThanh.Name</td>
+                            </tr>
+                            <tr>
+                                <td class="text-bold">Quận huyện: </td>
+                                <td>@donHang.QuanHuyen.Name</td>
+                                <td class="text-bold">Phường xã: </td>
+                                <td>@donHang.PhuongXa.Name</td>
+                            </tr>
+                            <tr>
+                                <td class="text-bold">Ngày đặt: </td>
+                                <td>@donHang.ngayDatHang.ToString("dd/MM/yyyy")</td>
+                                <td class="text-bold">Ngày giao: </td>
+                                <td>@ngayGiao</td>
+                            </tr>
+                            <tr>
+                                <td class="text-bold">Đơn vị vận chuyển: </td>
+                                <td>@donHang.dvVanChuyen</td>
+                                <td class="text-bold">Mã vận chuyển: </td>
+                                <td>@donHang.maVanChuyen</td>
+                            </tr>
+                            <tr>
+                                <td class="text-bold">Phí ship: </td>
+                                <td>@donHang.phiShip</td>
+                                <td class="text-bold">Tình trạng: </td>
+                                @Html.Raw(tinhTrang)
+                            </tr>
+                            <tr>
+                                <td class="text-bold">Ghi chú shop: </td>
+                                <td>@donHang.ghiChuShop</td>
+                                <td class="text-bold">Ghi chú khách: </td>
+                                <td>@donHang.ghiChuKhach</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body table-responsive p-0">
+                    <table class="table table-hover text-nowrap">
+                        <thead>
+                            <tr>
+                                <th>Sản phẩm</th>
+                                <th>Số lượng</th>
+                                <th>Tổng giá bán</th>
+                                <th>Đánh giá</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (chiTietDH chiTietDH in Model)
+                            {
+                                <tr>
+                                    <td><a href="@Url.Action("Product","Shop", routeValues: new {id = chiTietDH.sanPham.tenDuongDan })">@chiTietDH.sanPham.tenSP</a></td>
+                                    <td>@chiTietDH.soLuong</td>
+                                    <td>@chiTietDH.giaBan</td>
+                                    <td>@chiTietDH.danhGia</td>
+                                </tr>
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+        </div>
+    </div>
+    <!-- /.row -->
+</div>
+

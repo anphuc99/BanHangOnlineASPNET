@@ -1,0 +1,63 @@
+﻿@using DoAn.Models
+@using PagedList.Mvc
+@model PagedList.PagedList<sanPham>
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Menu.cshtml";
+}
+
+<div class="col-sm-9 padding-right">
+    <div class="features_items">
+        <!--features_items-->
+        <h2 class="title text-center">Features Items</h2>
+        @{ var ii = 0;}
+        @foreach (sanPham sp in Model)
+        {
+            int gia = sp.giaKM ?? sp.giaBan;
+            if (ii % 3 == 0)
+            {
+                @Html.Raw("<div class='row'>")
+            }
+            <div class="col-sm-4">
+                <div class="product-image-wrapper">
+                    <div class="single-products">
+                        <div class="productinfo text-center">
+                            <img src="@sp.anh.Url" alt="@sp.tenSP" height="200px" />
+                            <h2>@gia vnd</h2>
+                            <p>@sp.tenSP</p>
+                            <a href="@Url.Action("Product","Shop",routeValues: new{id = sp.tenDuongDan,})" class="btn btn-default add-to-cart"><i class="fa fa-shopping-cart"></i>Thêm vào giỏ</a>
+                        </div>
+                        <div class="product-overlay">
+                            <div class="overlay-content">
+                                <h2>@gia</h2>
+                                <p>@sp.tenSP</p>
+                                <a href="@Url.Action("Product","Shop",routeValues: new{id = sp.tenDuongDan,})" class="btn btn-default add-to-cart"><i class="fa fa-shopping-cart"></i>Thêm vào giỏ</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="choose">
+                        <ul class="nav nav-pills nav-justified">
+                            <li><a href="#"><i class="far fa-heart"></i>Thích</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            if (ii % 3 == 2)
+            {
+                @Html.Raw("</div>")
+            }
+            { ii++; }
+        }
+        @*@if (ViewBag.sanPhams.Count > 12)
+        {
+            <ul class="pagination">
+                <li class="active"><a href="">1</a></li>
+                <li><a href="">2</a></li>
+                <li><a href="">3</a></li>
+                <li><a href="">&raquo;</a></li>
+            </ul>
+        }*@
+        @Html.PagedListPager(Model, page => HttpContext.Current.Request.Url.LocalPath + "?search=" + ViewBag.search + "&price="+ ViewBag.price + " &page=" + page)
+
+    </div><!--features_items-->
+</div>

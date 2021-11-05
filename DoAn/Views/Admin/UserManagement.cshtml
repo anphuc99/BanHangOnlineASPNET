@@ -1,0 +1,122 @@
+﻿@using PagedList.Mvc
+@using DoAn.Models
+@model PagedList.PagedList<taiKhoan>
+@using System.Linq
+@{
+    ViewBag.Title = "UserManagement";
+}
+
+<div class="content-wrapper">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                @using (Html.BeginForm("Search_Blog", "Admin", FormMethod.Get))
+                {
+
+                    <div class="card-header">
+                        <h3 class="card-title">Quản lý người dùng</h3>
+                        <div class="card-tools">
+                            <div class="input-group input-group-sm" style="width: 150px;">
+                                <input type="text" name="search" class="form-control float-right" placeholder="Search">
+
+                                <div class="input-group-append">
+                                    <button type="submit" class="btn btn-default">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th style="width: 10px">#</th>
+                                <th>Tên tài khoản</th>
+                                <th>Số đơn đặt hàng</th>
+                                <th>Tỷ lệ giao thành công</th>
+                                <th></th>
+                                <th>Vai trò</th>
+                                <th>Tình trạng</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (taiKhoan taiKhoan in Model)
+                            {
+                                int thanhCong = taiKhoan.donHangs.Where(x => x.thanhCong == true).ToList().Count;
+                                int tongDong = taiKhoan.donHangs.Count;
+                                int tyLe = tongDong == 0 ? 0 : (int)(((double)thanhCong / (double)tongDong) * 100);
+
+                            <tr>
+                                <td>@taiKhoan.ID</td>
+                                <td><a href="@Url.Action("UserProfile","Admin",routeValues: new {id = taiKhoan.ID })">@taiKhoan.tenTK</a></td>
+                                <td>@taiKhoan.donHangs.Count</td>
+                                <td>
+                                    <div class="progress progress-xs">
+                                        <div class="progress-bar progress-bar-danger" style="width: @tyLe%"></div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-danger">@tyLe%</span>
+                                </td>
+                                <td>@taiKhoan.vaiTro</td>
+                                @if (taiKhoan.duocSD)
+                                {
+                                    <td style="color:lawngreen">Đang hoạt động</td>
+                                }
+                                else
+                                {
+                                    <td style="color:firebrick">Bị khóa</td>
+                                }
+                                <td>
+                                    <div class="dropdown">
+                                        <span class="dropdown-toggle" style="cursor:pointer" data-toggle="dropdown">
+                                            <i class="fas fa-edit"></i>
+                                        </span>
+                                        <div class="dropdown-menu">
+                                            @if (taiKhoan.duocSD)
+                                            {
+                                                <a href="@Url.Action("SettingUser","Admin",routeValues: new {id = taiKhoan.ID, type = 1 })" class="dropdown-item">Khóa tài khoản</a>
+                                            }
+                                            else
+                                            {
+                                                <a href="@Url.Action("SettingUser","Admin",routeValues: new {id = taiKhoan.ID, type = 1 })" class="dropdown-item">Mở khóa tài khoản</a>
+                                            }
+                                            @if (taiKhoan.vaiTro == "user")
+                                            {
+                                                <a href="@Url.Action("SettingUser","Admin",routeValues: new {id = taiKhoan.ID, type = 2 })" class="dropdown-item">Thăng lên làm admin</a>
+                                            }
+                                            else
+                                            {
+                                                <a href="@Url.Action("SettingUser","Admin",routeValues: new {id = taiKhoan.ID, type = 2 })" class="dropdown-item">Giảm cấp thành user</a>
+                                            }                                            
+                                            <a href="@Url.Action("SettingUser","Admin",routeValues: new {id = taiKhoan.ID, type = 3 })" class="dropdown-item">Xóa tài khoản</a>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.card-body -->
+                <div class="card-footer clearfix">
+                    @Html.PagedListPager(Model, page => Url.Action("UserManagement", "Admin", routeValues: new { page = page }),
+                               new PagedListRenderOptions
+                               {
+                                   DisplayLinkToIndividualPages = true,
+                                   MaximumPageNumbersToDisplay = 3,
+                                   LiElementClasses = new string[] { "page-item", "page-link" },
+                                   UlElementClasses = new string[] { "pagination", "pagination-sm", "m-0", "float-right" },
+                               })
+                </div>
+            </div>
+            <!-- /.card -->
+        </div>
+    </div>
+</div>
+

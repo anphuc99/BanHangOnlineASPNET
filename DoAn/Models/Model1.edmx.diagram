@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="bec81f2876ae4288b0b4d533a0de6a1b" Name="Diagram1">
+        <EntityTypeShape EntityType="onlineTradeModel.anh" Width="1.5" PointX="0.75" PointY="6.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="onlineTradeModel.baiViet" Width="1.5" PointX="3" PointY="6.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="onlineTradeModel.binhLuan" Width="1.5" PointX="8.25" PointY="6.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="onlineTradeModel.chiTietDH" Width="1.5" PointX="11.25" PointY="6.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="onlineTradeModel.donHang" Width="1.5" PointX="9" PointY="11.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="onlineTradeModel.loaiSP" Width="1.5" PointX="3.75" PointY="2.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="onlineTradeModel.PhuongXa" Width="1.5" PointX="6.75" PointY="12.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="onlineTradeModel.QuanHuyen" Width="1.5" PointX="4.5" PointY="12.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="onlineTradeModel.sanPham" Width="1.5" PointX="6" PointY="5.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="onlineTradeModel.taiKhoan" Width="1.5" PointX="9" PointY="2" IsExpanded="true" />
+        <EntityTypeShape EntityType="onlineTradeModel.TinhThanh" Width="1.5" PointX="2.25" PointY="12.75" IsExpanded="true" />
+        <AssociationConnector Association="onlineTradeModel.fk_baiViet_id_anh" ManuallyRouted="false" />
+        <AssociationConnector Association="onlineTradeModel.fk_sanPham_id_anh" ManuallyRouted="false" />
+        <AssociationConnector Association="onlineTradeModel.fk_binhLuan_id_binhLuan" ManuallyRouted="false" />
+        <AssociationConnector Association="onlineTradeModel.fk_binhLuan_id_sanPham" ManuallyRouted="false" />
+        <AssociationConnector Association="onlineTradeModel.fk_binhLuan_id_taiKhoan" ManuallyRouted="false" />
+        <AssociationConnector Association="onlineTradeModel.fk_chiTietDH_id_donHang" ManuallyRouted="false" />
+        <AssociationConnector Association="onlineTradeModel.fk_chiTietDH_id_taiKhoan" ManuallyRouted="false" />
+        <AssociationConnector Association="onlineTradeModel.fk_donHang_id_PhuongXa" ManuallyRouted="false" />
+        <AssociationConnector Association="onlineTradeModel.fk_donHang_id_QuanHuyen" ManuallyRouted="false" />
+        <AssociationConnector Association="onlineTradeModel.fk_donHang_id_taiKhoan" ManuallyRouted="false" />
+        <AssociationConnector Association="onlineTradeModel.fk_donHang_id_TinhThanh" ManuallyRouted="false" />
+        <AssociationConnector Association="onlineTradeModel.fk_loaiSP_id_loaiSP" ManuallyRouted="false" />
+        <AssociationConnector Association="onlineTradeModel.fk_sanPham_id_theLoai" ManuallyRouted="false" />
+        <AssociationConnector Association="onlineTradeModel.FK_Ward_District" ManuallyRouted="false" />
+        <AssociationConnector Association="onlineTradeModel.FK_District_Province" ManuallyRouted="false" />
+        <AssociationConnector Association="onlineTradeModel.thuVienAnhSP" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

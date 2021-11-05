@@ -1,0 +1,37 @@
+﻿@using DoAn.Models
+@model baiViet
+@{
+    ViewBag.Title = "Single";
+    Layout = "~/Views/Shared/_Menu.cshtml";
+}
+<div class="col-sm-9">
+    <div class="blog-post-area">
+        <h2 class="title text-center">Latest From our Blog</h2>
+        <div class="single-blog-post">
+            <h1>@Model.tenBV</h1>
+            <div class="post-meta">
+                <ul>
+                    <li><i class="fa fa-clock-o"></i>@Model.ngayDang.ToString("hh:mm:ss")</li>
+                    <li><i class="fa fa-calendar"></i>@Model.ngayDang.ToString("yyyy:MM:dd")</li>
+                </ul>
+                <span>
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star-half-o"></i>
+                </span>
+            </div>
+            <a href="">
+                <img src="images/blog/blog-one.jpg" alt="">
+            </a>
+            @Html.Raw(Model.noiDungBV)
+            <div class="pager-area">
+                <ul class="pager pull-right">
+                    <li><a href="#">Pre</a></li>
+                    <li><a href="#">Next</a></li>
+                </ul>
+            </div>
+        </div>
+    </div><!--/blog-post-area-->
+</div>

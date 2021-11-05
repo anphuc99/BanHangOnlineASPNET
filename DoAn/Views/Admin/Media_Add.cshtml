@@ -1,0 +1,75 @@
+﻿
+@{
+    ViewBag.Title = "Media_Add";
+}
+<div class="content-wrapper">
+    <div class="container">
+        @using (Html.BeginForm("Media_Add","Admin",FormMethod.Post,new {enctype = "multipart/form-data" }))
+        {
+        <div class="form-group">
+            @{
+                List<SelectListItem> list = new List<SelectListItem>();
+                foreach (string i in ViewBag.folder)
+                {
+                    list.Add(new SelectListItem { Text = i, Value = i });
+                }
+
+            }
+            @Html.DropDownList("folder", list, new { @class = "form-control mr-sm-2" })
+            @Html.TextBox("anh", "", new { Type = "file", multiple = "multiple", required = "" })
+            <input type="submit" class="btn btn-outline-danger" value="Up Load" />            
+        </div>
+            <div class="row" id="xemAnh">
+
+            </div>
+        }
+    </div>
+</div>
+@section js{
+    <script>
+        $(document).ready(function () {
+            $("#chonAnh").click(function () {
+                $("#anh").click()
+            })
+            $("#anh").change(function () {
+                $("#xemAnh").html("")
+                readURL(this);
+            });
+        })
+        function readURL(input) {
+            var i = 0;
+            while (input.files && input.files[i]) {
+                var allowedExtensions = /(\.jpg|\.jpeg|\.png|\.gif)$/i;
+                var koHopLe = false
+                switch ($(input)[0].files[i].type) {
+
+                    case 'image/png':
+
+                    case 'image/gif':
+
+                    case 'image/jpeg':
+
+                    case 'image/pjpeg':
+
+                        break;
+
+                    default:
+                        $("#xemAnh").html("")
+                        $($(input)[0]).val("")
+                        alert('File không hợp lệ!');
+                        koHopLe = true;
+                        return;
+
+                }
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    if (!koHopLe)
+                        $('<div class="col-sm-2"><img width="100%" /></div>').appendTo("#xemAnh").children().attr('src', e.target.result);
+                }
+                reader.readAsDataURL(input.files[i]);
+                i++;
+            }
+        }
+    </script>
+}

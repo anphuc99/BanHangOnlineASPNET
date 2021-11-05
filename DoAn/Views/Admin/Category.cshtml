@@ -1,0 +1,269 @@
+﻿@using DoAn.Models;
+@model DoAn.Models.loaiSP
+@{
+    ViewBag.Title = "Category";
+    onlineTradeEntities1 db = new onlineTradeEntities1();
+}
+
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0">Danh sách loại sản phẩm</h1>
+                </div><!-- /.col -->
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item active">Danh sách loại sản phẩm</li>
+                    </ol>
+                </div><!-- /.col -->
+            </div><!-- /.row -->
+        </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+    <!-- /.row -->
+    <div class="row">
+        <div class="col-12">
+            <button type="button" class="btn btn-outline-info btn-lg center-block" data-toggle="modal" data-target="#ThemMoi"><i class="fas fa-plus-circle"></i> Thêm mới</button>
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Danh sách loại sản phẩm</h3>
+
+                    <div class="card-tools">
+                        <div class="input-group input-group-sm" style="width: 150px;">
+                            <input type="text" id="Search" name="table_search" class="form-control float-right" placeholder="Search">
+
+                            <div class="input-group-append">
+                                <button type="button" id="Search-btn" class="btn btn-default">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body table-responsive p-0">
+                    <table class="table table-hover text-nowrap">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Tên Loại sản phẩm</th>
+                                <th>Số lượng sản phẩm</th>
+                                <th>Loại sản phẩm cha</th>
+                                <th>Ghi Chú</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (loaiSP loai in db.loaiSPs)
+                            {
+                                <tr>
+                                    <td>@loai.ID</td>
+                                    <td class="TenLoai">@loai.tenLoai</td>
+                                    <td>@loai.sanPhams.Count</td>
+                                    @if (loai.cha.Equals(null))
+                                    {
+                                        <td>null</td>
+                                    }
+
+                                    else
+                                    {
+                                        <td>@loai.loaiSP2.tenLoai</td>
+                                    }
+
+                                    <td>@loai.ghiChu</td>
+                                    <td>
+                                        <div class="dropdown">
+                                            <span class="dropdown-toggle" style="cursor:pointer" data-toggle="dropdown">
+                                                <i class="fas fa-edit"></i>
+                                            </span>
+                                            <div class="dropdown-menu">
+                                                <a data-toggle="modal" data-target="#Sua" onclick="Sua(@loai.ID)" class="dropdown-item">Sửa</a>
+                                                <a href="@Url.Action("Delete_Category","Admin", routeValues: new {id = loai.ID })" class="dropdown-item">Xóa</a>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+
+        </div>
+    </div>
+    <!-- /.row -->
+    <!--Modal-content-Thêm mới loại sản phẩm -->
+    @using (Html.BeginForm(FormMethod.Post))
+    {
+        <div class="modal fade" id="ThemMoi" style="display: none; padding-right: 17px;" aria-modal="true" role="dialog">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Thêm mới</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body form-inline">
+                        <label class="mb-2 ml-sm-2">Nhập tên thể loại</label>
+                        @Html.TextBoxFor(m => m.tenLoai, new { @class = "form-control mb-2 ml-sm-2" })
+                        @Html.ValidationMessageFor(m => m.tenLoai, "", new { style = "color:red" })
+                        <label class="mb-2 ml-sm-2">Nhập tên đường dẫn</label>
+                        @Html.TextBoxFor(m => m.tenDuongDan, new { @class = "form-control mb-2 ml-sm-2" })
+                        @Html.ValidationMessageFor(m => m.tenDuongDan, "", new { style = "color:red" })
+                        <label class="mb-2 ml-sm-2">Chọn thể loại cha</label>
+                        @{
+                            List<SelectListItem> list = new List<SelectListItem>();
+                            list.Add(new SelectListItem { Text = "null", Value = null });
+                            foreach (loaiSP i in db.loaiSPs)
+                            {
+                                list.Add(new SelectListItem { Text = i.tenLoai, Value = i.ID.ToString() });
+                            }
+                        }
+                        @Html.LabelFor(m => m.cha, "Thể loại")
+                        @Html.DropDownListFor(m => m.cha, list, new { @class = "form-control mb-2 ml-sm-2" })
+                        <label class="mb-2 ml-sm-2">Nhập ghi chú</label>
+                        @Html.TextBoxFor(m => m.ghiChu, new { @class = "form-control mb-2 ml-sm-2" })
+                    </div>
+                    <div class="modal-footer justify-content-between">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Thoát</button>
+                        <button type="submit" class="btn btn-primary">Chọn</button>
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+    }
+    <!--Modal-content-Sửa loại sản phẩm -->
+    @using (Html.BeginForm("Edit_Category","Admin", FormMethod.Post))
+    {
+        <div class="modal fade" id="Sua" style="display: none; padding-right: 17px;" aria-modal="true" role="dialog">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Thêm mới</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <div class="modal-body form-inline">
+                        @Html.HiddenFor(m => m.ID)
+                        <label class="mb-2 ml-sm-2">Nhập tên thể loại</label>
+                        @Html.TextBoxFor(m => m.tenLoai, new { @class = "form-control mb-2 ml-sm-2" })
+                        @Html.ValidationMessageFor(m => m.tenLoai, "", new { style = "color:red" })
+                        <label class="mb-2 ml-sm-2">Nhập tên đường dẫn</label>
+                        @Html.TextBoxFor(m => m.tenDuongDan, new { @class = "form-control mb-2 ml-sm-2" })
+                        @Html.ValidationMessageFor(m => m.tenDuongDan, "", new { style = "color:red" })
+                        <label class="mb-2 ml-sm-2">Chọn thể loại cha</label>
+                        @{
+                            List<SelectListItem> list = new List<SelectListItem>();
+                            list.Add(new SelectListItem { Text = "null", Value = null });
+                            foreach (loaiSP i in db.loaiSPs)
+                            {
+                                list.Add(new SelectListItem { Text = i.tenLoai, Value = i.ID.ToString() });
+                            }
+                        }
+                        @Html.LabelFor(m => m.cha, "Thể loại")
+                        @Html.DropDownListFor(m => m.cha, list, new { @class = "form-control mb-2 ml-sm-2" })
+                        <label class="mb-2 ml-sm-2">Nhập ghi chú</label>
+                        @Html.TextBoxFor(m => m.ghiChu, new { @class = "form-control mb-2 ml-sm-2" })
+                    </div>
+                    <div class="modal-footer justify-content-between">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Thoát</button>
+                        <button type="submit" class="btn btn-primary">Chọn</button>
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+    }
+</div>
+@section js{
+    <script>
+        // chuyển tiếng việt có dấu thành không dấu
+        function removeVietnameseTones(str) {
+            str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, "a");
+            str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, "e");
+            str = str.replace(/ì|í|ị|ỉ|ĩ/g, "i");
+            str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g, "o");
+            str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g, "u");
+            str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g, "y");
+            str = str.replace(/đ/g, "d");
+            str = str.replace(/À|Á|Ạ|Ả|Ã|Â|Ầ|Ấ|Ậ|Ẩ|Ẫ|Ă|Ằ|Ắ|Ặ|Ẳ|Ẵ/g, "A");
+            str = str.replace(/È|É|Ẹ|Ẻ|Ẽ|Ê|Ề|Ế|Ệ|Ể|Ễ/g, "E");
+            str = str.replace(/Ì|Í|Ị|Ỉ|Ĩ/g, "I");
+            str = str.replace(/Ò|Ó|Ọ|Ỏ|Õ|Ô|Ồ|Ố|Ộ|Ổ|Ỗ|Ơ|Ờ|Ớ|Ợ|Ở|Ỡ/g, "O");
+            str = str.replace(/Ù|Ú|Ụ|Ủ|Ũ|Ư|Ừ|Ứ|Ự|Ử|Ữ/g, "U");
+            str = str.replace(/Ỳ|Ý|Ỵ|Ỷ|Ỹ/g, "Y");
+            str = str.replace(/Đ/g, "D");
+            // Một vài bộ encode coi các dấu mũ, dấu chữ như một kí tự riêng biệt nên thêm hai dòng này
+            str = str.replace(/\u0300|\u0301|\u0303|\u0309|\u0323/g, ""); // ̀ ́ ̃ ̉ ̣  huyền, sắc, ngã, hỏi, nặng
+            str = str.replace(/\u02C6|\u0306|\u031B/g, ""); // ˆ ̆ ̛  Â, Ê, Ă, Ơ, Ư
+            // Bỏ các khoảng trắng liền nhau
+            str = str.replace(/ + /g, "-");
+            // thay đổi khoản trắng
+            str = str.replace(/ /g, "-")
+            str = str.trim();
+            // Bỏ dấu câu, kí tự đặc biệt
+            str = str.replace(/!|@@|%|\^|\*|\(|\)|\+|\=|\<|\>|\?|\/|,|\.|\:|\;|\'|\"|\&|\#|\[|\]|~|\$|_|`|-|{|}|\||\\/g, "-");
+            return str.toLowerCase();
+        }
+        $(document).ready(function () {
+            $('#tenLoai').change(function () {
+                $("#tenDuongDan").val(removeVietnameseTones($(this).val()))
+            })
+            $("#Search").keydown(function (e) {
+                if (e.keyCode == 13) {
+                    $(".TenLoai").each(function () {
+                        if ($(this).text() === $("#Search").val()) {
+                            $(this).parent().show()
+                            console.log($(this).text()+"ẩn")
+                        }
+
+                        else {
+                            $(this).parent().hide()
+                            console.log($(this).text()+"hiện")
+                        }
+                            
+                    })
+                }
+            })
+            $("#Search-btn").click(function () {
+                $(".TenLoai").each(function () {
+                    if ($(this).text() === $("#Search").val())
+                        $(this).parent().show()                        
+                    else
+                        $(this).parent().hide()                        
+                })
+            })
+        })
+    </script>    
+    <script>
+        function Sua(id) {
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("Ajax_Category","Admin")",
+                data: JSON.stringify({id:id}),
+                dataType: "json",
+                contentType: 'application/json; charset=utf-8',
+                success: function (data) {
+                    $("#Sua #ID").val(id)
+                    $("#Sua #tenLoai").val(data.TenLoai)
+                    $("#Sua #tenDuongDan").val(data.TenDuongDan)
+                    $("#Sua #cha").val(data.Cha)
+                    $("#Sua #ghiChu").val(data.GhiChu)
+                },
+                error: function () {
+                    alert("Error occured!!")
+                }
+            }); 
+        }
+    </script>
+}

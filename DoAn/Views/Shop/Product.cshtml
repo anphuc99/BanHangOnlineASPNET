@@ -1,0 +1,276 @@
+﻿@using DoAn.Models
+@{
+    ViewBag.Title = "Product";
+    Layout = "~/Views/Shared/_Menu.cshtml";
+    sanPham sanPham = ViewBag.sanPham;
+    onlineTradeEntities1 db = new onlineTradeEntities1();
+    List<chiTietDH> chiTietDHs = db.chiTietDHs.Where(x => x.maSP == sanPham.ID && x.danhGia != null).ToList();
+    double avg;
+    if (chiTietDHs.Count != 0)
+    {
+        avg = chiTietDHs.Select(x => x.danhGia ?? 0).ToList().Average();
+    }
+
+    else {
+        avg = 0;
+    }
+
+}
+
+<div class="col-sm-9 padding-right">
+    <div class="product-details">
+        <!--product-details-->
+        <div class="col-sm-5">
+            <div class="view-product">
+                <img src="@ViewBag.sanPham.anh.Url" alt="" />
+                <h3>ZOOM</h3>
+            </div>
+            <div id="similar-product" class="carousel slide" data-ride="carousel">
+                @{ int ii = 0; sanPham sp2 = sanPham; }
+                <!-- Wrapper for slides -->
+                <div class="carousel-inner">
+                    @foreach (anh a in sp2.anhs)
+                    {
+                        if (ii % 3 == 0)
+                        {
+                            if (ii == 0)
+                            {
+                                @Html.Raw("<div class='item active'>");
+                            }
+                            else
+                            {
+                                @Html.Raw("<div class='item'>");
+                            }
+                        }
+                        <a href=""><img src="@a.Url" width="25%" alt=""></a>
+                        if (ii % 3 == 2 || ii == (sp2.anhs.Count - 1))
+                        {
+                            @Html.Raw("</div>")
+                        }
+                        ii++;
+                    }
+                </div>
+
+                <!-- Controls -->
+                <a class="left item-control" href="#similar-product" data-slide="prev">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+                <a class="right item-control" href="#similar-product" data-slide="next">
+                    <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+
+        </div>
+        <div class="col-sm-7">
+            <div class="product-information">
+                <!--/product-information-->
+                <img src="images/product-details/new.jpg" class="newarrival" alt="" />
+                <h2>@sanPham.tenSP</h2>
+                <img src="images/product-details/rating.png" alt="" />
+                <h3 style="color:yellow">
+                    @for (int i4 = 1; i4 <= 5; i4++)
+                    {
+                        if (i4 <= Math.Round(avg))
+                        {
+                            <i class="fas fa-star"></i>
+                        }
+                        else
+                        {
+                            <i class="far fa-star"></i>
+                        }
+                    }
+                </h3>
+                <span>
+                    <span class="text-danger">@(sanPham.soLuong==0?"Hết hàng":null)</span>
+                    @if (sanPham.giaKM == null)
+                    {
+                        <span>vnd @sanPham.giaBan</span>
+                    }
+                    else
+                    {
+                        <p style="text-decoration:line-through">vnd @sanPham.giaBan</p>
+                        <span>vnd @sanPham.giaKM</span>
+                    }
+                    @if (sanPham.soLuong > 0)
+                    {
+                        <button type="button" class="btn btn-fefault cart" onclick="increaseGioHang(@sanPham.ID)">
+                            <i class="fa fa-shopping-cart"></i>
+                            Thêm vào giỏ
+                        </button>
+                    }
+                </span>
+                @Html.Raw(sanPham.tomTat)
+                <a href=""><img src="~/Asset/images/product-details/share.png" class="share img-responsive" alt="" /></a>
+            </div><!--/product-information-->
+        </div>
+    </div><!--/product-details-->
+    <!--Content Product-->
+    <div class="row">
+        <div class="col-sm-12">
+            @Html.Raw(sanPham.ndSanPham)
+        </div>
+    </div><!--/content-product-->
+    <div class="category-tab shop-details-tab">
+        <!--category-tab-->
+        <div class="col-sm-12">
+            <ul class="nav nav-tabs ul">
+                <li class="active"><a href="#ttKM" data-toggle="tab">Thông tin khuyến mãi</a></li>
+                <li><a href="#details" data-toggle="tab"> Sản Phẩm đang khuyến mãi</a></li>
+                <li><a href="#companyprofile" data-toggle="tab">Sản phẩm cùng loại</a></li>
+                <li><a href="#reviews" data-toggle="tab">Đánh giá (@chiTietDHs.Count)</a></li>
+                <li><a href="#comment" data-toggle="tab">Bình luận (@sanPham.binhLuans.Count)</a></li>
+            </ul>
+        </div>
+        <div class="tab-content">
+            <div class="tab-pane fade active in" id="ttKM">
+                <div class="col-sm-12">
+                    @Html.Raw(sanPham.khuyenMai)
+                </div>
+            </div>
+            <div class="tab-pane fade" id="details">
+                @foreach (sanPham sp in ViewBag.khuyenMai)
+                {
+                    <div class="col-sm-3">
+                        <div class="product-image-wrapper">
+                            <div class="single-products">
+                                <div class="productinfo text-center">
+                                    <img src="@sp.anh.Url" alt="" />
+                                    <h2>@(sp.giaKM??sp.giaBan) vnd</h2>
+                                    <p>@sp.tenSP vnd</p>
+                                    <a href="@Url.Action("Product","Shop",routeValues: new{id = sp.tenDuongDan,})" class="btn btn-default add-to-cart"><i class="fa fa-shopping-cart"></i>Thêm vào giỏ</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <div class="tab-pane fade" id="companyprofile">
+                @foreach (sanPham sp in ViewBag.CungLoai)
+                {
+                    <div class="col-sm-3">
+                        <div class="product-image-wrapper">
+                            <div class="single-products">
+                                <div class="productinfo text-center">
+                                    <img src="@sp.anh.Url" alt="" />
+                                    <h2>@(sp.giaKM??sp.giaBan) vnd</h2>
+                                    <p>@sp.tenSP vnd</p>
+                                    <a href="@Url.Action("Product","Shop",routeValues: new{id = sp.tenDuongDan,})" class="btn btn-default add-to-cart"><i class="fa fa-shopping-cart"></i>Thêm vào giỏ</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="tab-pane fade" id="reviews">
+                <div class="col-sm-12">
+                    @foreach (chiTietDH chiTietDH in chiTietDHs)
+                    {
+                        <div class="row">
+                            <div class="col-sm-6">
+                                @chiTietDH.donHang.taiKhoan.HoTen
+                            </div>
+                            <div class="col-sm-6" style="color:yellow">
+                                @for (int i3 = 1; i3 <= 5; i3++)
+                                {
+                                    if (i3 <= chiTietDH.danhGia)
+                                    {
+                                        <i class="fas fa-star"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="far fa-star"></i>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="tab-pane fade" id="comment">
+                @foreach (binhLuan binhLuan in sanPham.binhLuans.Where(x=>x.phanHoi==null))
+                {
+                    <div class="col-sm-12">
+                        <strong>@binhLuan.taiKhoan.HoTen:</strong>@Html.Raw(binhLuan.binhLuan1)
+                        <button class="btn btn-link" onclick="PhanHoi(@binhLuan.ID,'@binhLuan.taiKhoan.HoTen')">Phản hồi</button>
+                        <div class="container">
+                            @foreach (binhLuan phanHoi in binhLuan.binhLuan11)
+                            {
+                                <div class="row">
+                                    <div class="col-sm-1"></div>
+                                    <div class="col-sm-11">
+                                        <strong>@phanHoi.taiKhoan.HoTen:</strong> @Html.Raw(phanHoi.binhLuan1)
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+                <p><b>Viết bình luận</b></p>
+                @model DoAn.Models.binhLuan
+                @using (Html.BeginForm("Comment", "Shop",FormMethod.Get))
+                {
+                    @Html.TextAreaFor(m => m.binhLuan1)
+                    @Html.Hidden("maSP",sanPham.ID)
+                    @Html.HiddenFor(m => m.phanHoi)
+                    <button type="submit" class="btn btn-default pull-right">
+                        Submit
+                    </button>
+                }
+            </div>
+        </div>
+    </div><!--/category-tab-->
+
+    <div class="recommended_items">
+        <!--recommended_items-->
+        <h2 class="title text-center">recommended items</h2>
+
+        <div id="recommended-item-carousel" class="carousel slide" data-ride="carousel">
+            <div class="carousel-inner">
+                @{ onlineTradeEntities1 on = new onlineTradeEntities1(); List<sanPham> sanPhams = on.sanPhams.Where(x => x.dangSP).ToList(); var i = 0;}
+                @foreach (sanPham sp in sanPhams)
+                {
+                    if (i % 3 == 0)
+                    {
+                        if (i == 0)
+                        {
+                            @Html.Raw("<div class=\"item active\">")
+                        }
+                        else
+                        {
+                            @Html.Raw("<div class=\"item\">")
+                        }
+                    }
+                    <div class="col-sm-4">
+                        <div class="product-image-wrapper">
+                            <div class="single-products">
+                                <div class="productinfo text-center">
+                                    <img src="@sp.anh.Url" alt="" height="200px" />
+                                    <h2>@(sp.giaKM??sp.giaBan) vnd</h2>
+                                    <p>@sp.tenSP</p>
+                                    <a href="@Url.Action("Product","Shop",routeValues: new{id = sp.tenDuongDan,})" class="btn btn-default add-to-cart"><i class="fa fa-shopping-cart"></i>Thêm vào giỏ</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    if (i % 3 == 2 || i == sanPhams.Count - 1)
+                    {
+                        @Html.Raw("</div>")
+                    }
+                    if (i < 8)
+                    { i++; }
+                    else { break; }
+                }
+            </div>
+        </div>
+    </div>
+</div>
+@section js{
+    <script>
+        function PhanHoi(id, HoTen) {
+            debugger
+            $("#phanHoi").val(id)
+            $("#binhLuan1").val("@@" + HoTen+ "@@")
+        }
+    </script>    
+}

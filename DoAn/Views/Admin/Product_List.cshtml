@@ -1,0 +1,140 @@
+﻿@using DoAn.Models;
+@using PagedList.Mvc;
+@model PagedList.PagedList<sanPham>
+@{
+    ViewBag.Title = "Product_List";
+}
+
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0">Danh sách sản phẩm</h1>
+                </div><!-- /.col -->
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>
+                        <li class="breadcrumb-item active">Danh sách sản phẩm</li>
+                    </ol>
+                </div><!-- /.col -->
+            </div><!-- /.row -->
+        </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+    <!-- /.row -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                @using (Html.BeginForm("Search_Product", "Admin", FormMethod.Get))
+                {
+
+                <div class="card-header">
+                    <h3 class="card-title">Danh sách sản phẩm</h3>
+                    <div class="card-tools">
+                        <div class="input-group input-group-sm" style="width: 150px;">
+                            <input type="text" name="search" class="form-control float-right" placeholder="Search">
+
+                            <div class="input-group-append">
+                                <button type="submit" class="btn btn-default">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                }
+                <!-- /.card-header -->
+                <div class="card-body table-responsive p-0">
+                    <table class="table table-hover text-nowrap">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Tên sản phẩm</th>
+                                <th>Ảnh Bìa</th>
+                                <th>Loại sản phẩm</th>
+                                <th>Giá Bán</th>
+                                <th>Giá Khuyến Mãi</th>
+                                <th>Số lượng</th>
+                                <th>Lượt xem</th>
+                                <th>Lượt mua</th>
+                                <th>Ngày đăng</th>
+                                <th>Trạng thái</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (sanPham sanPham in Model)
+                            {
+                                <tr>
+                                    <td>@sanPham.ID</td>
+                                    <td>@sanPham.tenSP</td>
+                                    <td><img src="@sanPham.anh.Url" height="30px" /></td>
+                                    <td>@sanPham.loaiSP.tenLoai</td>
+                                    <td>@sanPham.giaBan</td>
+                                    <td>@sanPham.giaKM</td>
+                                    <td>@sanPham.soLuong</td>
+                                    <td>@sanPham.luotXem</td>
+                                    <td>@sanPham.luotMua</td>
+                                    <td>@sanPham.ngayDangSP.ToString("dd/MM/yyyy")</td>
+                                    @if (sanPham.dangSP)
+                                    {
+                                        <td style="color:lawngreen">Đã đăng</td>
+                                    }
+                                    else
+                                    {
+                                        <td style="color:firebrick">Nháp</td>
+                                    }
+                                    <td>
+                                        <div class="dropdown">
+                                            <span class="dropdown-toggle" style="cursor:pointer" data-toggle="dropdown">
+                                                <i class="fas fa-edit"></i>
+                                            </span>
+                                            <div class="dropdown-menu">
+                                                <a href="@Url.Action("Edit_Product","Admin", routeValues: new {id = sanPham.ID, })" class="dropdown-item">Sửa</a>
+                                                <a href="@Url.Action("Remove_Product","Admin", routeValues: new {id = sanPham.ID, })" class="dropdown-item">Xóa</a>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.card-body -->
+                <div class="card-header">
+                    <div class="card-tools">
+                        @if (ViewBag.search != null)
+                        {
+                            @Html.PagedListPager(Model, page => Url.Action("Search_Product", "Admin", routeValues: new { search = ViewBag.search, page = page }),
+                                                       new PagedListRenderOptions
+                                                       {
+                                                           DisplayLinkToIndividualPages = true,
+                                                           MaximumPageNumbersToDisplay = 3,
+                                                           LiElementClasses = new string[] { "page-item", "page-link" },
+                                                           UlElementClasses = new string[] { "pagination", "pagination-sm", "m-0", "float-right" },
+                                                       })
+                        }
+                        else
+                        {
+                            @Html.PagedListPager(Model, page => Url.Action("Product_List", "Admin", routeValues: new { search = ViewBag.search, page = page }),
+                                                       new PagedListRenderOptions
+                                                       {
+                                                           DisplayLinkToIndividualPages = true,
+                                                           MaximumPageNumbersToDisplay = 3,
+                                                           LiElementClasses = new string[] { "page-item", "page-link" },
+                                                           UlElementClasses = new string[] { "pagination", "pagination-sm", "m-0", "float-right" },
+                                                       })
+                        }
+
+                    </div>
+                </div>
+            </div>
+            <!-- /.card -->
+        </div>
+    </div>
+    <!-- /.row -->
+</div>
+

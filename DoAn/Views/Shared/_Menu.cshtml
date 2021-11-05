@@ -1,0 +1,85 @@
+﻿
+@using DoAn.Models;
+@{ Class1 loaiSP = (Class1) HttpContext.Current.Application["DungChung"]; }
+@{
+    ViewBag.Title = "_Menu";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section css{
+    @RenderSection("css", required: false)
+}
+@section Banner{
+    @RenderSection("Banner", required: false)
+}
+@section js{
+    @RenderSection("js", required: false)
+}
+<!--Menu Category-->
+<div class="col-sm-3">
+    <div class="left-sidebar">
+        <h2>Category</h2>
+        <div class="panel-group category-products" id="accordian">
+            <!--category-productsr-->
+        @foreach (loaiSP lspCha in loaiSP.LoaiSPCha()) {
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        @if (lspCha.loaiSP1.Count == 0)
+                        {
+                        <a href="@Url.Action("Category", "Shop", routeValues: new { id = lspCha.tenDuongDan, })">
+                            @if (lspCha.loaiSP1.Count != 0)
+                            {
+                                <span class="badge pull-right"><i class="fa fa-plus"></i></span>
+                            }
+                            @lspCha.tenLoai
+                        </a>
+                        }
+                        else
+                        {
+                    <a data-toggle="collapse" data-parent="#accordian" href="#menu@{@lspCha.ID}">
+                        @if (lspCha.loaiSP1.Count != 0)
+                        {
+                            <span class="badge pull-right"><i class="fa fa-plus"></i></span>
+                        }
+                        @lspCha.tenLoai
+                    </a>
+                }                        
+                    </h4>
+                </div>
+                @if (lspCha.loaiSP1.Count > 0)
+                {
+                <div id="menu@{@lspCha.ID}" class="panel-collapse collapse">
+                    <div class="panel-body">
+                        <ul>
+                            @foreach (loaiSP lspCon in lspCha.loaiSP1)
+                            {
+                                <li><a href="@Url.Action("Category","Shop",routeValues: new{id = lspCon.tenDuongDan,})">@lspCon.tenLoai </a></li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+                }                
+            </div>
+        }           
+        </div><!--/category-products-->
+
+        <div class="price-range">
+            <!--price-range-->
+            <h2>Price Range</h2>
+            <div class="well text-center">
+                @using (Html.BeginForm("price_filter", "Shop"))
+                {
+                    <input type="text" name="price" class="span2" value="" data-slider-min="0" data-slider-max="600000" data-slider-step="5" data-slider-value="[250,450]" id="sl2"><br />
+                    <button class="btn btn-danger" type="submit">Lọc</button>
+                }
+                <b class="pull-left">0</b> <b class="pull-right">600000</b>
+            </div>
+        </div><!--/price-range-->
+
+        <div class="shipping text-center">
+            <!--shipping-->
+            <img src="images/home/shipping.jpg" alt="" />
+        </div><!--/shipping-->
+    </div>
+</div>
+@RenderBody()

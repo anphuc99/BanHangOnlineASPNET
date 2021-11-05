@@ -1,0 +1,205 @@
+﻿@using DoAn.Models
+@using System.Linq;
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Menu.cshtml";    
+}
+
+@section Banner{
+    <section id="slider">
+        <!--slider-->
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div id="slider-carousel" class="carousel slide" data-ride="carousel">
+                        <ol class="carousel-indicators">
+                            <li data-target="#slider-carousel" data-slide-to="0" class="active"></li>
+                            <li data-target="#slider-carousel" data-slide-to="1"></li>
+                            <li data-target="#slider-carousel" data-slide-to="2"></li>
+                        </ol>
+                        <div class="carousel-inner">
+                            <div class="item active">
+                                <div class="col-sm-6">
+                                    <h1><span>E</span>-SHOPPER</h1>
+                                    <h2>Free E-Commerce Template</h2>
+                                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. </p>
+                                    <button type="button" class="btn btn-default get">Get it now</button>
+                                </div>
+                                <div class="col-sm-6">
+                                    <img src="~/Asset/images/home/banner-md-siro-web-1536x576.jpg" class="girl img-responsive" alt="" />
+                                    <img src="~/Asset/images/home/pricing.png" class="pricing" alt="" />
+                                </div>
+                            </div>
+                            <div class="item">
+                                <div class="col-sm-6">
+                                    <h1><span>E</span>-SHOPPER</h1>
+                                    <h2>100% Responsive Design</h2>
+                                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. </p>
+                                    <button type="button" class="btn btn-default get">Get it now</button>
+                                </div>
+                                <div class="col-sm-6">
+                                    <img src="~/Asset/images/home/banner-simmy-kawaii-box-1536x576.png" class="girl img-responsive" alt="" />
+                                    <img src="~/Asset/images/home/pricing.png" class="pricing" alt="" />
+                                </div>
+                            </div>
+
+                            <div class="item">
+                                <div class="col-sm-6">
+                                    <h1><span>E</span>-SHOPPER</h1>
+                                    <h2>Free Ecommerce Template</h2>
+                                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. </p>
+                                    <button type="button" class="btn btn-default get">Get it now</button>
+                                </div>
+                                <div class="col-sm-6">
+                                    <img src="~/Asset/images/home/banner-1.jpg" class="girl img-responsive" alt="" />
+                                    <img src="~/Asset/images/home/pricing.png" class="pricing" alt="" />
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <a href="#slider-carousel" class="left control-carousel hidden-xs" data-slide="prev">
+                            <i class="fa fa-angle-left"></i>
+                        </a>
+                        <a href="#slider-carousel" class="right control-carousel hidden-xs" data-slide="next">
+                            <i class="fa fa-angle-right"></i>
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section><!--/slider-->
+}
+<div class="col-sm-9 padding-right">
+    <div class="features_items">
+        <!--features_items-->
+        <h2 class="title text-center">Features Items</h2>
+        @{ var ii = 0;}
+        @foreach (sanPham sp in ViewBag.sanPhams)
+        {
+            if (ii % 3 == 0)
+            {
+                @Html.Raw("<div class='row'>")
+            }
+            <div class="col-sm-4">
+                <div class="product-image-wrapper">
+                    <div class="single-products">
+                        <div class="productinfo text-center">
+                            <img src="@sp.anh.Url" alt="@sp.tenSP" height="200px" />
+                            <h2>@(sp.giaKM??sp.giaBan) vnd</h2>
+                            <p>@sp.tenSP</p>
+                            <a href="@Url.Action("Product","Shop",routeValues: new{id = sp.tenDuongDan,})" class="btn btn-default add-to-cart"><i class="fa fa-shopping-cart"></i>Thêm vào giỏ</a>
+                        </div>
+                        <div class="product-overlay">
+                            <div class="overlay-content">
+                                <h2>@(sp.giaKM??sp.giaBan) vnd</h2>
+                                <p>@sp.tenSP</p>
+                                <a href="@Url.Action("Product","Shop",routeValues: new{id = sp.tenDuongDan,})" class="btn btn-default add-to-cart"><i class="fa fa-shopping-cart"></i>Thêm vào giỏ</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="choose">
+                        <ul class="nav nav-pills nav-justified">
+                            <li><a href="#"><i class="far fa-heart"></i>Thích</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            if (ii % 3 == 2)
+            {
+                @Html.Raw("</div>")
+            }
+            { ii++; }
+        }
+    </div><!--features_items-->
+
+    <div class="category-tab">
+        <!--category-tab-->
+        <div class="col-sm-12">
+            <ul class="nav nav-tabs ul">
+                @foreach (loaiSP lspCha in ViewBag.loaiSPs)
+                {
+                    <li><a href="#duoi@{@lspCha.ID}" data-toggle="tab">@lspCha.tenLoai</a></li>
+                }                
+            </ul>
+        </div>
+        <div class="tab-content">
+            @foreach (loaiSP lsp in ViewBag.loaiSPs)
+            {
+                <div class="tab-pane fade" id="duoi@{@lsp.ID}">
+                    @{ IEnumerable<sanPham> sanPham = (from sp in lsp.sanPhams where sp.dangSP == true orderby sp.luotXem descending select sp).Take(4);}
+                    @foreach(sanPham sp in sanPham)
+                    {
+                        <div class="col-sm-3">
+                            <div class="product-image-wrapper">
+                                <div class="single-products">
+                                    <div class="productinfo text-center">
+                                        <img src="@sp.anh.Url" alt="@sp.tenSP" height="200px" />
+                                        <h2>@(sp.giaKM??sp.giaBan) vnd</h2>
+                                        <p>@sp.tenSP</p>
+                                        <a href="@Url.Action("Product","Shop",routeValues: new{id = sp.tenDuongDan,})" class="btn btn-default add-to-cart"><i class="fa fa-shopping-cart"></i>Thêm vào giỏ</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    
+                </div>
+            }
+            
+        </div>
+    </div><!--/category-tab-->
+
+    <div class="recommended_items">
+        <!--recommended_items-->
+        <h2 class="title text-center">recommended items</h2>
+
+        <div id="recommended-item-carousel" class="carousel slide" data-ride="carousel">
+            <div class="carousel-inner">
+                @{ onlineTradeEntities1 on = new onlineTradeEntities1(); List<sanPham> sanPhams = on.sanPhams.Where(x=>x.dangSP == true).ToList(); var i = 0;}
+                @foreach (sanPham sp in sanPhams)
+                {
+                    if (i % 3 == 0)
+                    {
+                        if (i == 0)
+                        {
+                            @Html.Raw("<div class=\"item active\">")
+                        }
+                        else
+                        {
+                            @Html.Raw("<div class=\"item\">")
+                        }
+                    }
+                    <div class="col-sm-4">
+                        <div class="product-image-wrapper">
+                            <div class="single-products">
+                                <div class="productinfo text-center">
+                                    <img src="@sp.anh.Url" alt="" height="200px" />
+                                    <h2>@(sp.giaKM??sp.giaBan) vnd</h2>
+                                    <p>@sp.tenSP</p>
+                                    <a href="@Url.Action("Product","Shop",routeValues: new{id = sp.tenDuongDan,})" class="btn btn-default add-to-cart"><i class="fa fa-shopping-cart"></i>Add to cart</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    if (i % 3 == 2 || i == sanPhams.Count - 1)
+                    {
+                        @Html.Raw("</div>")
+                    }
+                    if (i < 8)
+                    { i++; }
+                    else { break; }
+                }
+            </div>
+        </div>
+    </div>
+</div><!--/recommended_items-->
+@section js{
+    <script>
+        $(document).ready(function () {
+            $(".nav.nav-tabs>li:first").addClass("active")
+            $(".tab-content>div:first").addClass("active in")
+        })
+    </script>
+}

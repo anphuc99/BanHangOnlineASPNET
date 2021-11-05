@@ -1,0 +1,260 @@
+﻿@model DoAn.Models.taiKhoan
+@using DoAn.Models
+@{
+    string gioiTinh = Model.gioiTinh ? "Nam" : "Nữ";
+    string chan = "Đổi mật khẩu";
+    string tinhTrang = "Đang hoạt động";
+    ViewBag.Title = "ProfileUser";
+}
+@section css{
+    <style>
+
+        /* The actual timeline (the vertical ruler) */
+        .timeline {
+          position: relative;
+          max-width: 1200px;
+          margin: 0 auto;
+        }
+
+        /* The actual timeline (the vertical ruler) */
+        .timeline::after {
+          content: '';
+          position: absolute;
+          width: 6px;
+          background-color: white;
+          top: 0;
+          bottom: 0;
+          left: 50%;
+          margin-left: -3px;
+        }
+
+        /* Container around content */
+        .container2 {
+          padding: 10px 40px;
+          position: relative;
+          background-color: inherit;
+          width: 50%;
+        }
+
+        /* The circles on the timeline */
+        .container2::after {
+          content: '';
+          position: absolute;
+          width: 25px;
+          height: 25px;
+          right: -17px;
+          background-color: white;
+          border: 4px solid #FF9F55;
+          top: 15px;
+          border-radius: 50%;
+          z-index: 1;
+        }
+
+        /* Place the container to the left */
+        .left {
+          left: 0;
+        }
+
+        /* Place the container to the right */
+        .right {
+          left: 50%;
+        }
+
+        /* Add arrows to the left container (pointing right) */
+        .left::before {
+          content: " ";
+          height: 0;
+          position: absolute;
+          top: 22px;
+          width: 0;
+          z-index: 1;
+          right: 30px;
+          border: medium solid white;
+          border-width: 10px 0 10px 10px;
+          border-color: transparent transparent transparent white;
+        }
+
+        /* Add arrows to the right container (pointing left) */
+        .right::before {
+          content: " ";
+          height: 0;
+          position: absolute;
+          top: 22px;
+          width: 0;
+          z-index: 1;
+          left: 30px;
+          border: medium solid white;
+          border-width: 10px 10px 10px 0;
+          border-color: transparent white transparent transparent;
+        }
+
+        /* Fix the circle for containers on the right side */
+        .right::after {
+          left: -16px;
+        }
+
+        /* The actual content */
+        .content2 {
+          padding: 20px 30px;
+          background-color: white;
+          position: relative;
+          border-radius: 6px;
+        }
+
+        /* Media queries - Responsive timeline on screens less than 600px wide */
+        @@media screen and (max-width: 600px) {
+        /* Place the timelime to the left */
+          .timeline::after {
+            left: 31px;
+          }
+
+        /* Full-width containers */
+          .container2 {
+            width: 100%;
+            padding-left: 70px;
+            padding-right: 25px;
+          }
+
+        /* Make sure that all arrows are pointing leftwards */
+          .container2::before {
+            left: 60px;
+            border: medium solid white;
+            border-width: 10px 10px 10px 0;
+            border-color: transparent white transparent transparent;
+          }
+
+        /* Make sure all circles are at the same spot */
+          .left::after, .right::after {
+            left: 15px;
+          }
+
+        /* Make all right containers behave like the left ones */
+          .right {
+            left: 0%;
+          }
+        }
+    </style>
+}
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-3">
+
+                    <!-- Profile Image -->
+                    <div class="card card-primary card-outline">
+                        <div class="card-body box-profile">
+                            <div class="text-center">
+                                <img class="profile-user-img img-fluid img-circle"
+                                     src="../../dist/img/user4-128x128.jpg"
+                                     alt="User profile picture">
+                            </div>
+
+                            <h3 class="profile-username text-center">@Model.HoTen</h3>
+
+                            <ul class="list-group list-group-unbordered mb-3">
+                                <li class="list-group-item">
+                                    <b>Giới tính</b> <a class="float-right">@gioiTinh</a>
+                                </li>
+                                <li class="list-group-item">
+                                    <b>Số điện thoại</b> <a class="float-right">@Model.SDT</a>
+                                </li>
+                            </ul>
+
+                            <a href="#settings" data-toggle="tab" class="btn btn-primary btn-block"><b>@chan</b></a>
+                        </div>
+                        <!-- /.card-body -->
+                    </div>
+                    <!-- /.card -->
+                </div>
+                <!-- /.col -->
+                <div class="col-md-9">
+                    <div class="card">
+                        <div class="category-tab">
+                            <ul class="nav nav-tabs ul">
+                                <li><a href="#activity" data-toggle="tab">Thông tin thêm</a></li>
+                                <li><a href="#timeline" data-toggle="tab">Lịch sử đặt hàng</a></li>
+                                <li><a href="#settings" data-toggle="tab">Cài đặt tài khoản</a></li>
+                            </ul>
+                        </div><!-- /.card-header -->
+                        <div class="card-body">
+                            <div class="tab-content">
+                                <div class="active tab-pane" id="activity">
+                                    <ul class="list-group list-group-unbordered mb-3">
+                                        <li class="list-group-item">
+                                            <b>ID: </b> <span class="float-right">@Model.ID</span>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <b>Tên tài khoản: </b> <span class="float-right">@Model.tenTK</span>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <b>Email</b> <span class="float-right">@Model.email</span>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <b>Ngày tạo</b> <span class="float-right">@Model.ngayCap.ToString("dd/MM/yyyy")</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <!-- /.tab-pane -->
+                                <div class="tab-pane" id="timeline" style="background-color: #474e5d;">
+                                    <div class="timeline">
+                                        @{ List<donHang> donHangs = Model.donHangs.ToList();}
+                                        @for (int i = 0; i < donHangs.Count; i+=2) { 
+
+                                        <div class="container2 left">
+                                            <div class="content2">
+                                                <h2><a href="@Url.Action("OrderManagement","Shop",routeValues: new {id =donHangs[i].ID })">@donHangs[i].ngayDatHang.ToString("dd/MM/yyyy")</a></h2>                                                
+                                                <p><strong>Ghi chú khách:</strong> @donHangs[i].ghiChuKhach</p>
+                                                <p><strong>Ghi chú shop:</strong> @donHangs[i].ghiChuShop</p>
+                                            </div>
+                                        </div>
+                                        if (i+1 < donHangs.Count) { 
+                                        <div class="container2 right">
+                                            <div class="content2">
+                                                <h2><a href="@Url.Action("OrderManagement","Shop",routeValues: new {id =donHangs[i+1].ID })">@donHangs[i + 1].ngayDatHang.ToString("dd/MM/yyyy")</a></h2>
+                                                <p><strong>Ghi chú khách:</strong> @donHangs[i+1].ghiChuKhach</p>
+                                                <p><strong>Ghi chú shop:</strong> @donHangs[i+1].ghiChuShop</p>
+                                            </div>
+                                        </div>
+                                        }
+                                        
+                                        }                                                                                
+                                    </div>
+                                </div>
+                                <!-- /.tab-pane -->
+
+                                <div class="tab-pane" id="settings">
+                                    @using (Html.BeginForm("ProfileUser", "User", FormMethod.Post, new { @class = "form-horizontal" }))
+                                    {
+                                        <div class="form-group row">
+                                            @Html.Hidden("id",Model.ID)
+                                            <label for="inputName" class="col-sm-2 col-form-label">Mật khẩu</label>                                            
+                                            <div class="col-sm-10">
+                                                @Html.Password("MatKhau", "", new { @class = "form-control", placeholder = "Xác nhận mật khẩu", required = "" })
+                                            </div>                                          
+                                            <label for="inputName" class="col-sm-2 col-form-label">Xác nhận mật khẩu</label>                                            
+                                            <div class="col-sm-10">
+                                                @Html.Password("xnMK", "", new { @class = "form-control", placeholder = "Xác nhận mật khẩu", required = "" })
+                                                <p class="text-danger">@ViewBag.xnMK</p>
+                                            </div>
+                                            <button type="submit" class="btn-danger">Đổi mật khẩu</button>
+                                        </div>
+                                    }
+                                </div>
+                                <!-- /.tab-pane -->
+                            </div>
+                            <!-- /.tab-content -->
+                        </div><!-- /.card-body -->
+                    </div>
+                    <!-- /.card -->
+                </div>
+                <!-- /.col -->
+            </div>
+            <!-- /.row -->
+        </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+</div>
+<!-- /.content-wrapper -->

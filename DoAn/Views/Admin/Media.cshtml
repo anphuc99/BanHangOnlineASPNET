@@ -1,0 +1,147 @@
+﻿@{
+    ViewBag.Title = "Media";
+}
+@section css{
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="/resources/demos/style.css">
+}
+<div oncontextmenu="return false">
+    
+    <div class="content-wrapper" oncontextmenu="right_Click()">
+        <div class="row">
+            @foreach (string folder in ViewBag.folder)
+            {
+                <div class="col-sm-2 folder" onmouseover="folder_hover('@folder')" onmouseout="folder_unHover()">
+                    <a href="@Url.Action("Media_Images","Admin", routeValues: new {folder = folder })"><img src="~/Asset/images/icon/thumuc.png" width="100%" /></a>
+                    <p><strong>@folder</strong></p>
+                </div>
+            }
+
+
+        </div>
+    </div>
+</div>
+
+<div class="dropdown-menu" id="menu-content" style="position:absolute">
+    <a class="dropdown-item" href="#" onclick="open_dialog_create()">Tạo folder mới</a>
+</div>
+<div class="dropdown-menu" id="menu-folder" style="position:absolute">
+    <a class="dropdown-item" href="#" onclick="open_dialog_create()">Tạo folder mới</a>
+    <a class="dropdown-item" href="#" onclick="open_dialog()">Xóa folder</a>
+    <a class="dropdown-item" href="#" onclick="open_dialog_rename()">Đổi tên folder</a>
+</div>
+<div style="display:none">
+    <div id="dialog-confirm" title="Bạn có muốn xóa thư mục này?">
+        <p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>Nếu bạn xóa thì tất cả ảnh trong thư mục đều bị xóa. Bạn chắc chứ?</p>
+    </div>
+    <div id="dialog-create" title="Bạn có muốn xóa thư mục này?" class="form-group">
+        @using (Html.BeginForm("Media_Create_Folder", "Admin", FormMethod.Get, new { id = "create_folder" }))
+        {
+            <label class="form-control">Nhập tên folder</label>
+            @Html.TextBox("folderName", "", new { @class = "form-control" })
+        }
+    </div>
+    <div id="dialog-rename" title="Đổi tên?" class="form-group">
+        @using (Html.BeginForm("Media_Rename_Folder", "Admin", FormMethod.Get, new { id = "rename_folder"}))
+        {
+            <label class="form-control">Nhập tên folder</label>
+            @Html.TextBox("folderNewName", "", new { @class = "form-control" })
+            @Html.Hidden("folderOldName")
+        }
+    </div>
+    @using (Html.BeginForm("Media_Delete_Folder", "Admin", FormMethod.Get, new { id = "delete_folder" }))
+    {@Html.Hidden("folderDeleteName")}
+</div>
+
+@section js{
+    <script>
+        var FolderNameClick = null
+        var FolderName
+        var hover = true
+        function right_Click(e) {
+            $('#menu-content').hide()
+            $('#menu-folder').hide()
+            var e = window.event
+            var item
+            if (FolderNameClick === null)
+                $('#menu-content').css({ left: e.pageX, top: e.pageY }).show()
+            else {
+                $('#menu-folder').css({ left: e.pageX, top: e.pageY }).show()
+                FolderName = FolderNameClick
+            }
+
+        }
+        $(document).ready(function () {
+            $("body").click(function () {
+                $('#menu-content').hide()
+                $('#menu-folder').hide()
+            })
+        })
+        function folder_hover(name) {
+            FolderNameClick = name
+        }
+        function folder_unHover() {
+            FolderNameClick = null;
+        }
+    </script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script>
+        function open_dialog() {
+            var FolderName2 = FolderName
+            $("#dialog-confirm").dialog({
+                resizable: false,
+                height: "auto",
+                width: 400,
+                modal: true,
+                buttons: {
+                    "Xóa tát cả": function () {
+                        $('#folderDeleteName').val(FolderName2)
+                        $("#delete_folder").submit()
+                    },
+                    Cancel: function () {
+                        $(this).dialog("close");
+                    }
+                }
+            });
+        }
+        function open_dialog_create() {
+            $("#dialog-create").dialog({
+                resizable: false,
+                height: "auto",
+                width: 400,
+                modal: true,
+                buttons: {
+                    "Tạo": function () {
+                        $("#create_folder").submit();
+                    },
+                    Cancel: function () {
+                        $(this).dialog("close");
+                    }
+                }
+            });
+        }
+        function open_dialog_rename() {
+            var FolderName2 = FolderName
+            $("#dialog-rename").dialog({
+                resizable: false,
+                height: "auto",
+                width: 400,
+                modal: true,
+                buttons: {
+                    "Đổi tên": function () {
+                        $("#folderOldName").val(FolderName2)
+                        $("#rename_folder").submit();
+                    },
+                    Cancel: function () {
+                        $(this).dialog("close");
+                    }
+                }
+            });
+        }
+        $(document).ready(function () {
+            var msg = '@Html.Raw(ViewBag.msg)'
+            if (msg !== '')
+                alert(msg)
+        })
+    </script>
+}

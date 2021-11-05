@@ -1,0 +1,567 @@
+﻿@model DoAn.Models.sanPham
+@using DoAn.Models
+@{ onlineTradeEntities1 anhs = new onlineTradeEntities1(); }
+@{
+    ViewBag.Title = "Create";
+}
+@section css{
+    <link rel="stylesheet" href="~/Asset/Trumbowyg-master/dist/ui/trumbowyg.min.css">
+    <link rel="stylesheet" href="~/Asset/Admin/plugins/select2/css/select2.min.css">
+    <link rel="stylesheet" href="~/Asset/Admin/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
+    <style>
+        .bor {
+            border: 5px solid red;
+        }
+    </style>
+    <style>
+        .container2 {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .image {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+
+        .overlay2 {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            width: 100%;
+            opacity: 0;
+            transition: .3s ease;
+            background-color: red;
+        }
+
+        .container2:hover .overlay2 {
+            opacity: 1;
+        }
+
+        .icon {
+            color: white;
+            font-size: 100px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            -ms-transform: translate(-50%, -50%);
+            text-align: center;
+            background: none;
+            border: none;
+        }
+
+            .icon:hover {
+                color: #d8d7d7
+            }
+
+        .fa-user:hover {
+            color: #eee;
+        }
+    </style>
+}
+<div class="content-wrapper">
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Thêm sản phẩm mới</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="@Url.Action("Index","Admin")">Home</a></li>
+                        <li class="breadcrumb-item active">Thêm sản phẩm</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    @using (Html.BeginForm("Edit_Product", "Admin", FormMethod.Post))
+    {
+        <!-- SELECT2 EXAMPLE -->
+        @Html.Hidden("tva")
+        @Html.HiddenFor(m => m.dangSP)
+        @Html.TextBoxFor(m => m.ID, new { style = "display: none", Value = ViewBag.sanPham.ID})
+        <div class="card card-default">
+            <div class="card-header">
+                <div class="card-tools">
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                    <button type="button" class="btn btn-tool" data-card-widget="remove">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            @{ onlineTradeEntities1 loaiSP = new onlineTradeEntities1();
+                                List<SelectListItem> list = new List<SelectListItem>();
+                                foreach (loaiSP i in loaiSP.loaiSPs)
+                                {
+                                    if (i.ID == ViewBag.sanPham.maLoai)
+                                    {
+                                        list.Add(new SelectListItem { Text = i.tenLoai, Value = i.ID.ToString(), Selected = true });
+                                    }
+                                    else
+                                    {
+                                        list.Add(new SelectListItem { Text = i.tenLoai, Value = i.ID.ToString(), Selected = false });
+                                    }
+                                }
+
+                            }
+                            @Html.LabelFor(m => m.maLoai, "Thể loại")
+                            @Html.DropDownListFor(m => m.maLoai, list, new { @class = "form-control select2" })
+                        </div>
+                    </div>
+                    <!-- /.col -->
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.tenSP, "Nhập tên sản phẩm")
+                            @Html.ValidationMessageFor(m => m.tenSP)
+                            @Html.TextBoxFor(m => m.tenSP, new { @class = "form-control", Value = ViewBag.sanPham.tenSP})
+                        </div>
+                    </div>
+                    <!-- /.col -->
+                </div>
+                <!-- /.row -->
+                <!--row-->
+                <div class="row">
+                    <div class="col-12">
+                        @Html.LabelFor(m => m.ndSanPham, "Nhập mô tả", new { style = "display: block" })
+                        @Html.ValidationMessageFor(m => m.ndSanPham)
+                        <button type="button" class="btn btn-outline-info btn-lg center-block" data-toggle="modal" data-target="#ThemAnhNoiDung"><i class="fas fa-photo-video"></i> Thêm media</button>
+                        @Html.TextAreaFor(m => m.ndSanPham)
+                    </div>
+                </div>
+                <!--/.row-->
+                <!--row-->
+                <div class="row">
+                    <div class="col-12 col-sm-6">
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.tomTat, "Nhập tóm tắt")
+                            @Html.TextAreaFor(m => m.tomTat)
+                        </div>
+                        <!-- /.form-group -->
+                    </div>
+                    <!-- /.col -->
+                    <div class="col-12 col-sm-6">
+                        <div class="form-row">
+                            <div class="col">
+                                @Html.LabelFor(m => m.giaBan, "")
+                                @Html.ValidationMessageFor(m => m.giaBan)
+                                @Html.TextBoxFor(m => m.giaBan, new { @class = "form-control", placeholder = "Nhập giá bán", type = "number", Value = ViewBag.sanPham.giaBan })
+                            </div>
+                            <div class="col">
+                                @Html.LabelFor(m => m.giaKM, "")
+                                @Html.ValidationMessageFor(m => m.giaKM)
+                                @Html.TextBoxFor(m => m.giaKM, new { @class = "form-control", placeholder = "Nhập khuyến mãi", type = "number", Value = ViewBag.sanPham.giaKM })
+                            </div>
+                            <div class="col">
+                                @Html.LabelFor(m => m.soLuong, "")
+                                @Html.ValidationMessageFor(m => m.soLuong)
+                                @Html.TextBoxFor(m => m.soLuong, new { @class = "form-control", placeholder = "Nhập số lượng", type = "number", Value = ViewBag.sanPham.soLuong })
+                            </div>
+                        </div>
+                        <!-- /.form-group -->
+                        <div class="form-group">
+                            @Html.LabelFor(m => m.tenDuongDan, "Nhập tên đường dẫn")
+                            @Html.ValidationMessageFor(m => m.tenDuongDan)
+                            @Html.TextBoxFor(m => m.tenDuongDan, new { @class = "form-control", Value = ViewBag.sanPham.tenDuongDan })
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                @Html.ValidationMessageFor(m => m.anhBia)
+                                @Html.HiddenFor(m => m.anhBia, new {Value = ViewBag.sanPham.anhBia })
+                                <img src="@ViewBag.sanPham.anh.Url" style=" height: 250px; width:100%" />
+                                <button type="button" class="btn btn-outline-secondary btn-block" data-toggle="modal" data-target="#AnhBia"><i class="fas fa-photo-video"></i> Thêm ảnh bìa</button>
+                                <div class="form-row">
+                                    <div class="col">
+                                        <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#ThuVienAnh">Chọn thư viện ảnh</button>
+                                    </div>
+                                    <div class="form-inline">
+                                        @Html.LabelFor(m => m.dvt, "Nhập đơn vị tính", new { @class = "mb-2 mr-sm-2" })
+                                        @Html.TextBoxFor(m => m.dvt, new { @class = "form-control mb-2 mr-sm-2", Value = ViewBag.sanPham.dvt })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.col -->
+                </div>
+                <!-- /.row -->
+                <div class="row">
+                    <div class="col-12">
+                        @Html.LabelFor(m => m.khuyenMai, "Nhập thông tin khuyến mãi")
+                        @Html.TextAreaFor(m => m.khuyenMai)
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 form-inline">
+                    <button type="button" id="LuuNhap" class="btn btn-default mb-2 mr-sm-2">Lưu nháp</button>
+                    <button type="button" id="XemThu" class="btn btn-link mb-2 mr-sm-2">Xem thử</button>
+                    <button type="button" id="DangBai" class="btn btn-primary mb-2 mr-sm-2">Đăng bài</button>
+                </div>
+            </div>
+            <!-- /.card-body -->
+            <div class="card-footer">
+                Visit <a href="https://select2.github.io/">Select2 documentation</a> for more examples and information about
+                the plugin.
+            </div>
+        </div> <!-- /.card --> <!-- SELECT2 EXAMPLE -->
+    }
+    <!--Modal-content-Ảnh Bìa -->
+    <div class="modal fade" id="AnhBia" style="display: none; padding-right: 17px;" aria-modal="true" role="dialog">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Thêm ảnh bìa</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    @foreach (anh anh in anhs.anhs)
+                    {
+                        <img src="@anh.Url" height="150px" onclick="add_AnhBia(this,@anh.ID)" style="cursor: pointer" />
+                    }
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Thoát</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <!--Modal-content-Thư viện Ảnh -->
+    <div class="modal fade" id="ThuVienAnh" style="display: none; padding-right: 17px;" aria-modal="true" role="dialog">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Thêm ảnh và video</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row" id="tvAnh">
+                        @foreach (anh anh in ViewBag.sanPham.anhs)
+                        {
+                            <div class="container2 col-md-2 col-sm-3"><img src="@anh.Url" alt="TVA" id_TVA="@anh.ID" class="image"><div class="overlay2"><spam class="icon" onclick="xoaTVA(this)"><i class="fas fa-times"></i></spam></div></div>
+                        }
+                    </div>
+                    <button type="button" class="btn btn-outline-info btn-lg center-block" data-toggle="modal" data-target="#chonTVA"><i class="fas fa-photo-video"></i> Chọn Ảnh</button>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Thoát</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Chọn</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <!--Modal-content-Thêm ảnh vào mô tả -->
+    <div class="modal fade" id="ThemAnhNoiDung" style="display: none; padding-right: 17px;" aria-modal="true" role="dialog">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Thêm ảnh và video</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    @foreach (anh anh in anhs.anhs)
+                    {
+                        <img src="@anh.Url" height="150px" onclick="add_shadow(this)" style="cursor: pointer" />
+                    }
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Thoát</button>
+                    <button type="button" class="btn btn-primary" id="moTa">Chọn</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <!--Modal-content-Chọn Thư viện Ảnh -->
+    <div class="modal fade" id="chonTVA" style="display: none; padding-right: 17px;" aria-modal="true" role="dialog">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Thêm ảnh và video</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    @foreach (anh anh in anhs.anhs)
+                    {
+                        <img id_anh="@anh.ID" src="@anh.Url" height="150px" onclick="add_shadow(this)" style="cursor: pointer" />
+                    }
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Thoát</button>
+                    <button type="button" class="btn btn-primary" id="_ChonTVA">Chọn</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+
+</div>
+@section js{
+    <script src="~/Asset/Admin/plugins/select2/js/select2.full.min.js"></script>
+    <script src="~/Asset/Trumbowyg-master/dist/trumbowyg.min.js"></script>
+    <script>
+        $('#ndSanPham').trumbowyg();
+        $('#tomTat').trumbowyg();
+        $('#khuyenMai').trumbowyg();
+    </script>
+    <script>
+        $(function () {
+            //Initialize Select2 Elements
+            $('.select2').select2()
+
+            //Initialize Select2 Elements
+            $('.select2bs4').select2({
+                theme: 'bootstrap4'
+            })
+
+            //Datemask dd/mm/yyyy
+            $('#datemask').inputmask('dd/mm/yyyy', { 'placeholder': 'dd/mm/yyyy' })
+            //Datemask2 mm/dd/yyyy
+            $('#datemask2').inputmask('mm/dd/yyyy', { 'placeholder': 'mm/dd/yyyy' })
+            //Money Euro
+            $('[data-mask]').inputmask()
+
+            //Date range picker
+            $('#reservationdate').datetimepicker({
+                format: 'L'
+            });
+            //Date range picker
+            $('#reservation').daterangepicker()
+            //Date range picker with time picker
+            $('#reservationtime').daterangepicker({
+                timePicker: true,
+                timePickerIncrement: 30,
+                locale: {
+                    format: 'MM/DD/YYYY hh:mm A'
+                }
+            })
+            //Date range as a button
+            $('#daterange-btn').daterangepicker(
+                {
+                    ranges: {
+                        'Today': [moment(), moment()],
+                        'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                        'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                        'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                        'This Month': [moment().startOf('month'), moment().endOf('month')],
+                        'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+                    },
+                    startDate: moment().subtract(29, 'days'),
+                    endDate: moment()
+                },
+                function (start, end) {
+                    $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'))
+                }
+            )
+
+            //Timepicker
+            $('#timepicker').datetimepicker({
+                format: 'LT'
+            })
+
+            //Bootstrap Duallistbox
+            $('.duallistbox').bootstrapDualListbox()
+
+            //Colorpicker
+            $('.my-colorpicker1').colorpicker()
+            //color picker with addon
+            $('.my-colorpicker2').colorpicker()
+
+            $('.my-colorpicker2').on('colorpickerChange', function (event) {
+                $('.my-colorpicker2 .fa-square').css('color', event.color.toString());
+            });
+
+            $("input[data-bootstrap-switch]").each(function () {
+                $(this).bootstrapSwitch('state', $(this).prop('checked'));
+            });
+
+        })
+        // BS-Stepper Init
+        document.addEventListener('DOMContentLoaded', function () {
+            window.stepper = new Stepper(document.querySelector('.bs-stepper'))
+        });
+
+        // DropzoneJS Demo Code Start
+        Dropzone.autoDiscover = false;
+
+        // Get the template HTML and remove it from the doumenthe template HTML and remove it from the doument
+        var previewNode = document.querySelector("#template");
+        previewNode.id = "";
+        var previewTemplate = previewNode.parentNode.innerHTML;
+        previewNode.parentNode.removeChild(previewNode);
+
+        var myDropzone = new Dropzone(document.body, { // Make the whole body a dropzone
+            url: "/target-url", // Set the url
+            thumbnailWidth: 80,
+            thumbnailHeight: 80,
+            parallelUploads: 20,
+            previewTemplate: previewTemplate,
+            autoQueue: false, // Make sure the files aren't queued until manually added
+            previewsContainer: "#previews", // Define the container to display the previews
+            clickable: ".fileinput-button" // Define the element that should be used as click trigger to select files.
+        });
+
+        myDropzone.on("addedfile", function (file) {
+            // Hookup the start button
+            file.previewElement.querySelector(".start").onclick = function () { myDropzone.enqueueFile(file); };
+        });
+
+        // Update the total progress bar
+        myDropzone.on("totaluploadprogress", function (progress) {
+            document.querySelector("#total-progress .progress-bar").style.width = progress + "%";
+        });
+
+        myDropzone.on("sending", function (file) {
+            // Show the total progress bar when upload starts
+            document.querySelector("#total-progress").style.opacity = "1";
+            // And disable the start button
+            file.previewElement.querySelector(".start").setAttribute("disabled", "disabled");
+        });
+
+        // Hide the total progress bar when nothing's uploading anymore
+        myDropzone.on("queuecomplete", function (progress) {
+            document.querySelector("#total-progress").style.opacity = "0";
+        });
+
+        // Setup the buttons for all transfers
+        // The "add files" button doesn't need to be setup because the config
+        // `clickable` has already been specified.
+        document.querySelector("#actions .start").onclick = function () {
+            myDropzone.enqueueFiles(myDropzone.getFilesWithStatus(Dropzone.ADDED));
+        };
+        document.querySelector("#actions .cancel").onclick = function () {
+            myDropzone.removeAllFiles(true);
+        };
+        // DropzoneJS Demo Code End
+    </script>
+    <script>
+        function add_shadow(img) {
+            if ($(img).hasClass('bor')) {
+                $(img).removeClass("bor")
+            }
+            else {
+                $(img).addClass('bor')
+            }
+
+        }
+        var idAnhBia = @ViewBag.sanPham.anh.ID
+        function add_AnhBia(img, id) {
+            var Url = $(img).attr('src')
+            $("#anhBia").val(id)
+            $('button[data-target="#AnhBia"]').prev().attr("src", Url)
+
+            $('button[data-dismiss="modal"]').click()
+        }
+        // chuyển tiếng việt có dấu thành không dấu
+        function removeVietnameseTones(str) {
+            str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, "a");
+            str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, "e");
+            str = str.replace(/ì|í|ị|ỉ|ĩ/g, "i");
+            str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g, "o");
+            str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g, "u");
+            str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g, "y");
+            str = str.replace(/đ/g, "d");
+            str = str.replace(/À|Á|Ạ|Ả|Ã|Â|Ầ|Ấ|Ậ|Ẩ|Ẫ|Ă|Ằ|Ắ|Ặ|Ẳ|Ẵ/g, "A");
+            str = str.replace(/È|É|Ẹ|Ẻ|Ẽ|Ê|Ề|Ế|Ệ|Ể|Ễ/g, "E");
+            str = str.replace(/Ì|Í|Ị|Ỉ|Ĩ/g, "I");
+            str = str.replace(/Ò|Ó|Ọ|Ỏ|Õ|Ô|Ồ|Ố|Ộ|Ổ|Ỗ|Ơ|Ờ|Ớ|Ợ|Ở|Ỡ/g, "O");
+            str = str.replace(/Ù|Ú|Ụ|Ủ|Ũ|Ư|Ừ|Ứ|Ự|Ử|Ữ/g, "U");
+            str = str.replace(/Ỳ|Ý|Ỵ|Ỷ|Ỹ/g, "Y");
+            str = str.replace(/Đ/g, "D");
+            // Một vài bộ encode coi các dấu mũ, dấu chữ như một kí tự riêng biệt nên thêm hai dòng này
+            str = str.replace(/\u0300|\u0301|\u0303|\u0309|\u0323/g, ""); // ̀ ́ ̃ ̉ ̣  huyền, sắc, ngã, hỏi, nặng
+            str = str.replace(/\u02C6|\u0306|\u031B/g, ""); // ˆ ̆ ̛  Â, Ê, Ă, Ơ, Ư
+            // Bỏ các khoảng trắng liền nhau
+            str = str.replace(/ + /g, "-");
+            // thay đổi khoản trắng
+            str = str.replace(/ /g, "-")
+            str = str.trim();
+            // Bỏ dấu câu, kí tự đặc biệt
+            str = str.replace(/!|@@|%|\^|\*|\(|\)|\+|\=|\<|\>|\?|\/|,|\.|\:|\;|\'|\"|\&|\#|\[|\]|~|\$|_|`|-|{|}|\||\\/g, "-");
+            return str.toLowerCase();
+        }
+        $(document).ready(function () {
+            // Thêm dữ liệu vào ndSanPham, tomTat, khuyenMai, ảnh bìa
+            $('#ndSanPham').trumbowyg('html', '@Html.Raw(ViewBag.sanPham.ndSanPham)');
+            $('#tomTat').trumbowyg('html', '@Html.Raw(ViewBag.sanPham.tomTat)');
+            $('#khuyenMai').trumbowyg('html', '@Html.Raw(ViewBag.sanPham.khuyenMai)');
+            // Tự động điền tên đường dẫn
+            $('#tenSP').change(function () {
+                $("#tenDuongDan").val(removeVietnameseTones($(this).val()))
+            })
+            // Thêm media vào mô tả
+            $("#moTa").click(function () {
+                var val = ""
+                $(".bor").each(function () {
+                    val = val + "<img src = \"" + $(this).attr("src") + "\"/>"
+                    $(this).removeClass('bor')
+                })
+                var html = $('#ndSanPham').trumbowyg('html');
+                $('#ndSanPham').trumbowyg('html', html + val);
+                $(this).prev().click()
+            })
+            $("#_ChonTVA").click(function () {
+                var val = ""
+                $(".bor").each(function () {
+                    var id = $(this).attr("id_anh")
+                    val = val + '<div class="container2 col-md-2 col-sm-3"><img src="' + $(this).attr('src') + '" alt="TVA" id_TVA="' + id + '" class="image"><div class="overlay2"><spam class="icon" onclick = "xoaTVA(this)" ><i class="fas fa-times"></i></spam></div></div>'
+                    $(this).removeClass('bor')
+                })
+                $(val).clone(true).appendTo("#tvAnh")
+                $(this).prev().click()
+            })
+            $('[data-dismiss="modal"]').click(function () {
+                $(".bor").each(function () {
+                    $(this).removeClass('bor')
+                })
+            })
+            var dangBai = ""
+            $("#DangBai,#LuuNhap,#XemThu").click(function () {
+                var id_TVAs = ""
+                $("img[id_TVA]").each(function () {
+                    id_TVAs = id_TVAs + $(this).attr("id_TVA") + ","
+                })
+                $("#tva").val(id_TVAs.substring(0, id_TVAs.length - 1))                
+                if ($(this).attr("id") == "DangBai")
+                    $("#dangSP").val(true);
+                else if ($(this).attr("id") == "LuuNhap")
+                    $("#dangSP").val(false);
+                else {
+                    $('@Html.Hidden("preview")').appendTo("form").val(true);
+                    $("#dangSP").val(false);
+                }
+                $("form").submit();
+            })
+        })
+        function xoaTVA(This) {
+            $(This).parent().parent().remove()
+        }
+    </script>
+}

@@ -1,0 +1,235 @@
+﻿@using DoAn.Models
+@model DoAn.Models.baiViet
+
+@{
+    onlineTradeEntities1 db = new onlineTradeEntities1();
+    List<IGrouping<string, anh>> thuMuc = db.anhs.ToList().GroupBy(x => x.Url.Split('/')[3]).ToList();
+    ViewBag.Title = "Create_Blog";
+}
+@section css{
+    <link rel="stylesheet" href="~/Asset/Trumbowyg-master/dist/ui/trumbowyg.min.css">
+    <style>
+        .bor {
+            border: 5px solid red;
+        }
+    </style>
+}
+<div class="content-wrapper">
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Thêm bài viết mới</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="@Url.Action("Index","Admin")">Home</a></li>
+                        <li class="breadcrumb-item active">Thêm bài viết mới</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+    @using (Html.BeginForm(FormMethod.Post))
+    {
+        @Html.HiddenFor(m=>m.hienThi)
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.tenBV, "Nhập tên bài viết")
+                    @Html.ValidationMessageFor(m => m.tenBV,"", new { @class = "text-danger" })
+                    @Html.TextBoxFor(m => m.tenBV, new { @class = "form-control", required = "" })
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(m => m.tenDuongDan, "Nhập tên đường dẫn")
+                    @Html.ValidationMessageFor(m => m.tenDuongDan, "", new { @class = "text-danger" })
+                    @Html.TextBoxFor(m => m.tenDuongDan, new { @class = "form-control", required = "" })
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                @Html.LabelFor(m => m.noiDungBV, "Nhập nội dung", new { style = "display: block" })
+                @Html.ValidationMessageFor(m => m.noiDungBV, "", new { @class = "text-danger" })
+                <button type="button" class="btn btn-outline-info btn-lg center-block" data-toggle="modal" data-target="#ThemAnhNoiDung"><i class="fas fa-photo-video"></i> Thêm media</button>
+                @Html.TextAreaFor(m => m.noiDungBV, new { required = "" })
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                @Html.LabelFor(m => m.tomTat, "Nhập tóm tắt", new { style = "display: block" })
+                @Html.ValidationMessageFor(m => m.tomTat, "", new { @class = "text-danger" })
+                @Html.TextAreaFor(m => m.tomTat,new { required="" })
+            </div>
+            <div class="col-md-6">
+                @if (!Object.ReferenceEquals(null,Model))
+                {
+                    <img src="@Model.anh.Url" style=" height: 250px; width:100%" id="hienThiAnh" />
+                }
+                else
+                {
+                    <img style=" height: 250px; width:100%" id="hienThiAnh" />
+                }
+
+                @Html.ValidationMessageFor(m => m.anhBia, "", new { @class = "text-danger" })
+                <button type="button" class="btn btn-outline-secondary btn-block" data-toggle="modal" data-target="#AnhBia"><i class="fas fa-photo-video"></i> Thêm ảnh bìa</button>
+                @Html.HiddenFor(m => m.anhBia)
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 form-inline">
+                <button type="button" id="LuuNhap" class="btn btn-default mb-2 mr-sm-2">Lưu nháp</button>
+                <button type="button" id="XemThu" class="btn btn-link mb-2 mr-sm-2">Xem thử</button>
+                <button type="button" id="DangBai" class="btn btn-primary mb-2 mr-sm-2">Đăng bài</button>
+            </div>
+        </div>
+    </div>
+    }
+</div>
+<!--Modal-content-Thêm ảnh vào mô tả -->
+<div class="modal fade" id="ThemAnhNoiDung" style="display: none; padding-right: 17px;" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Thêm ảnh và video</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <select class="anh form-control">
+                    @foreach (IGrouping<string, anh> tenThuMuc in thuMuc)
+                    {
+                        <option value="@tenThuMuc.Key">@tenThuMuc.Key</option>
+                    }
+                </select>
+                @foreach (anh anh in db.anhs)
+                {
+                    <img src="@anh.Url" height="150px" onclick="add_shadow(this)" style="cursor: pointer" />
+                }
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Thoát</button>
+                <button type="button" class="btn btn-primary" id="moTa">Chọn</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!--Modal-content-Ảnh Bìa -->
+<div class="modal fade" id="AnhBia" style="display: none; padding-right: 17px;" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Thêm ảnh bìa</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <select class="anh form-control">
+                    @foreach(IGrouping<string,anh> tenThuMuc in thuMuc) { 
+                        <option value="@tenThuMuc.Key">@tenThuMuc.Key</option>
+                    }
+                </select>
+                @foreach (anh anh in db.anhs)
+                {
+                    <img src="@anh.Url" height="150px" onclick="add_AnhBia(this,@anh.ID)" style="cursor: pointer" />
+                }
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Thoát</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+@section js{
+    <script src="~/Asset/Trumbowyg-master/dist/trumbowyg.min.js"></script>
+    <script>
+        $('#noiDungBV').trumbowyg();
+        $("#tomTat").trumbowyg();
+        // chuyển tiếng việt có dấu thành không dấu
+        function removeVietnameseTones(str) {
+            str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, "a");
+            str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, "e");
+            str = str.replace(/ì|í|ị|ỉ|ĩ/g, "i");
+            str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g, "o");
+            str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g, "u");
+            str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g, "y");
+            str = str.replace(/đ/g, "d");
+            str = str.replace(/À|Á|Ạ|Ả|Ã|Â|Ầ|Ấ|Ậ|Ẩ|Ẫ|Ă|Ằ|Ắ|Ặ|Ẳ|Ẵ/g, "A");
+            str = str.replace(/È|É|Ẹ|Ẻ|Ẽ|Ê|Ề|Ế|Ệ|Ể|Ễ/g, "E");
+            str = str.replace(/Ì|Í|Ị|Ỉ|Ĩ/g, "I");
+            str = str.replace(/Ò|Ó|Ọ|Ỏ|Õ|Ô|Ồ|Ố|Ộ|Ổ|Ỗ|Ơ|Ờ|Ớ|Ợ|Ở|Ỡ/g, "O");
+            str = str.replace(/Ù|Ú|Ụ|Ủ|Ũ|Ư|Ừ|Ứ|Ự|Ử|Ữ/g, "U");
+            str = str.replace(/Ỳ|Ý|Ỵ|Ỷ|Ỹ/g, "Y");
+            str = str.replace(/Đ/g, "D");
+            // Một vài bộ encode coi các dấu mũ, dấu chữ như một kí tự riêng biệt nên thêm hai dòng này
+            str = str.replace(/\u0300|\u0301|\u0303|\u0309|\u0323/g, ""); // ̀ ́ ̃ ̉ ̣  huyền, sắc, ngã, hỏi, nặng
+            str = str.replace(/\u02C6|\u0306|\u031B/g, ""); // ˆ ̆ ̛  Â, Ê, Ă, Ơ, Ư
+            // Bỏ các khoảng trắng liền nhau
+            str = str.replace(/ + /g, "-");
+            // thay đổi khoản trắng
+            str = str.replace(/ /g, "-")
+            str = str.trim();
+            // Bỏ dấu câu, kí tự đặc biệt
+            str = str.replace(/!|@@|%|\^|\*|\(|\)|\+|\=|\<|\>|\?|\/|,|\.|\:|\;|\'|\"|\&|\#|\[|\]|~|\$|_|`|-|{|}|\||\\/g, "-");
+            return str.toLowerCase();
+        }
+        $("#tenBV").change(function () {
+            $("#tenDuongDan").val(removeVietnameseTones($(this).val()))
+        })
+        function add_AnhBia(img, id) {
+            var Url = $(img).attr('src')
+            $("#anhBia").val(id)
+            $('img#hienThiAnh').attr("src", Url)
+
+            $('button[data-dismiss="modal"]').click()
+        }
+        function add_shadow(img) {
+            if ($(img).hasClass('bor')) {
+                $(img).removeClass("bor")
+            }
+            else {
+                $(img).addClass('bor')
+            }
+        }
+        $("#moTa").click(function () {
+            var val = ""
+            $(".bor").each(function () {
+                val = val + "<img src = \"" + $(this).attr("src") + "\"/>"
+                $(this).removeClass('bor')
+            })
+            var html = $('#noiDungBV').trumbowyg('html');
+            $('#noiDungBV').trumbowyg('html', html + val);
+            $(this).prev().click()
+        })
+        $("#DangBai,#LuuNhap,#XemThu").click(function () {
+                if ($(this).attr("id") == "DangBai")
+                    $("#hienThi").val(true);
+                else if ($(this).attr("id") == "LuuNhap")
+                    $("#hienThi").val(false);
+                else {
+                    $('@Html.Hidden("preview")').appendTo("form").val(true);
+                    $("#hienThi").val(false);
+                }
+                $("form").submit();
+        })
+        $(".anh").change(function () {
+            let img = $(this).parent().children("img")
+            img.show()
+            let value = $(this).val()
+            img.each(function () {
+                let thuMuc = $(this).attr("src").split('/')[3]
+                if (thuMuc != value)
+                    $(this).hide()
+            })
+        })
+    </script>
+}
